@@ -17,7 +17,7 @@ class HouseViewSet(viewsets.ModelViewSet):
     filter_backends = [
         DjangoFilterBackend,
         SearchFilter,
-    ]  # Теперь SearchFilter определен
+    ]
     filterset_fields = {
         "price_per_night": ["gte", "lte"],
         "capacity": ["exact", "gte"],
@@ -28,9 +28,9 @@ class HouseViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["GET"])
     def top_rated(self, request):
         """Возвращает 5 коттеджей с самым высоким рейтингом."""
-        houses = House.objects.annotate(avg_rating=Avg("reviews__rating")).order_by(
-            "-avg_rating"
-        )[:5]
+        houses = House.objects.annotate(
+            avg_rating=Avg("review__rating")  # Используем review вместо reviews
+        ).order_by("-avg_rating")[:5]
         serializer = HouseSerializer(houses, many=True)
         return Response(serializer.data)
 
