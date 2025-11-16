@@ -65,6 +65,8 @@ urlpatterns = (
             "api/houses/<int:house_id>/history/",
             HouseHistoryViewSet.as_view({"get": "list"}),
         ),
+        path('payment/success/<int:payment_id>/', views.payment_success, name='payment_success'),
+        path('payment/webhook/yookassa/', views.yookassa_webhook, name='yookassa_webhook'),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,5 +1,6 @@
 import re
-
+from django import forms
+from django.conf import settings
 import django_filters
 from ckeditor.widgets import CKEditorWidget
 from django import forms
@@ -305,92 +306,101 @@ class BookingForm(forms.ModelForm):
         label="Телефон",
         max_length=20,
         required=True,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-        validators=[RegexValidator(regex=r"^\+7\d{10}$")],
+        widget=forms.TextInput(attrs={"class": "form-control", "id": "id_phone_number"}),
     )
-
+    
     check_in_date = forms.DateField(widget=forms.HiddenInput())
     check_out_date = forms.DateField(widget=forms.HiddenInput())
     guests = forms.IntegerField(widget=forms.HiddenInput())
-
+    
     services = forms.ModelMultipleChoiceField(
-        queryset=Service.objects.all(),
+        queryset=Service.objects.filter(is_active=True),
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    
+
     class Meta:
         model = Booking
-        fields = ["client_name", "email", "phone_number", "services", "comment", 
-                 "check_in_date", "check_out_date", "guests"]
+        fields = [
+            "client_name", "email", "phone_number", "services", "comment",
+            "check_in_date", "check_out_date", "guests"
+        ]
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("user", None)
-        self.house = kwargs.pop("house", None)
+        self.user = kwargs.pop('user', None)
+        self.house = kwargs.pop('house', None)
         super().__init__(*args, **kwargs)
+        
+        print(f"DEBUG: Form initialized with house: {self.house}")
 
-        if self.user and self.user.is_authenticated:
-            self.fields["client_name"].initial = self.user.get_full_name()
-            self.fields["email"].initial = self.user.email
-            if hasattr(self.user, "phone"):
-                self.fields["phone_number"].initial = self.user.phone
+    def _post_clean(self):
+        # ПЕРЕОПРЕДЕЛЯЕМ метод чтобы избежать вызова full_clean() модели
+        # Вместо этого выполняем свою валидацию
+        opts = self._meta
+
+        # Вызываем clean() формы но не модели
+        try:
+            self.instance = Booking()  # Создаем пустой экземпляр
+            self.clean()
+        except ValidationError as e:
+            self._update_errors(e)
+
+        # Пропускаем вызов full_clean() модели
+        # if self._meta.model:
+        #     self.instance.full_clean(
+        #         exclude=self._get_validation_exclusions(),
+        #         validate_unique=False,
+        #     )
 
     def clean(self):
+        # Простая валидация полей формы
         cleaned_data = super().clean()
-
-        # Проверяем что house передан
-        if not self.house:
-            raise ValidationError("Не указан коттедж для бронирования")
-
-        # Проверяем что даты переданы
-        check_in_date = cleaned_data.get("check_in_date")
-        check_out_date = cleaned_data.get("check_out_date")
-        guests = cleaned_data.get("guests")
-
-        if not all([check_in_date, check_out_date, guests]):
-            missing = []
-            if not check_in_date:
-                missing.append("дата заезда")
-            if not check_out_date:
-                missing.append("дата выезда")
-            if not guests:
-                missing.append("количество гостей")
-            raise ValidationError(f"Не заполнены: {', '.join(missing)}")
-
-        # Проверяем количество гостей
-        if guests < 1:
-            raise ValidationError("Количество гостей должно быть не менее 1")
-
-        # Проверка вместимости
-        if self.house and self.house.capacity and guests > self.house.capacity:
-            raise ValidationError(
-                f"Коттедж вмещает максимум {self.house.capacity} гостей"
-            )
-
+        
+        # Проверяем обязательные поля формы
+        required_fields = ['check_in_date', 'check_out_date', 'guests', 'client_name', 'email', 'phone_number']
+        for field in required_fields:
+            if not cleaned_data.get(field):
+                raise ValidationError(f"Поле {field} обязательно для заполнения")
+                
         return cleaned_data
 
     def save(self, commit=True):
-        # Создаем экземпляр бронирования, но пока не сохраняем в базу (commit=False)
-        booking = super().save(commit=False)
-
-        # Устанавливаем дополнительные поля, которые не входят в форму
-        booking.user = self.user
-        booking.house = self.house
-
-        # Получаем даты и количество гостей из cleaned_data
-        booking.check_in_date = self.cleaned_data["check_in_date"]
-        booking.check_out_date = self.cleaned_data["check_out_date"]
-        booking.guests = self.cleaned_data["guests"]
-
+        print(f"DEBUG: Saving booking with house: {self.house}")
+        
+        booking = Booking(
+            house=self.house,
+            user=self.user,
+            client_name=self.cleaned_data['client_name'],
+            email=self.cleaned_data['email'],
+            phone_number=self.cleaned_data['phone_number'],
+            check_in_date=self.cleaned_data['check_in_date'],
+            check_out_date=self.cleaned_data['check_out_date'],
+            guests=self.cleaned_data['guests'],
+            comment=self.cleaned_data.get('comment', '')
+        )
+        
         # Рассчитываем стоимость
         nights = (booking.check_out_date - booking.check_in_date).days
-        booking.total_cost = self.house.price_per_night * nights
-
-        # Если нужно сохранить (по умолчанию True)
+        booking.base_cost = self.house.price_per_night * nights
+        
+        services = self.cleaned_data.get('services', [])
+        service_cost = sum(service.price for service in services)
+        booking.total_cost = booking.base_cost + service_cost
+        
+        # Отладочный вывод
+        print(f"DEBUG: Cost calculation - Nights: {nights}, Base: {booking.base_cost}, Services: {service_cost}, Total: {booking.total_cost}")
+        
+        try:
+            booking.full_clean()
+        except ValidationError as e:
+            print(f"DEBUG: Validation error: {e}")
+            raise
+        
         if commit:
-            booking.save()  # Сначала сохраняем основную модель
-            self.save_m2m()  # Затем сохраняем many-to-many отношения (услуги)
-
+            booking.save()
+            if services:
+                booking.services.set(services)
+            
         return booking
 
 
@@ -450,3 +460,25 @@ class HouseFilter(django_filters.FilterSet):
     class Meta:
         model = House
         fields = []  # Отключаем автоматические фильтры
+
+class PaymentMethodForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Безопасное получение настроек с значениями по умолчанию
+        prepayment_percent = getattr(settings, 'BOOKING_PREPAYMENT_PERCENT', 30)
+        refund_days = getattr(settings, 'BOOKING_REFUND_DAYS', 3)
+        
+        self.fields['payment_method'] = forms.ChoiceField(
+            choices=[
+                ('full', 'Полная оплата онлайн - безопасная оплата через ЮKassa'),
+                ('prepayment', f'Предоплата {prepayment_percent}% - оплата части стоимости онлайн'),
+            ],
+            widget=forms.RadioSelect,
+            label='Выберите способ оплаты',
+            initial='full'
+        )
+        
+        self.fields['agree_with_terms'] = forms.BooleanField(
+            required=True,
+            label=f'Я согласен с условиями бронирования и понимаю, что возврат средств возможен только при отмене бронирования за {refund_days}+ суток до заезда'
+        )

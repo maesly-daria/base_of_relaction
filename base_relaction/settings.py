@@ -174,3 +174,12 @@ CKEDITOR_CONFIGS = {
 TRANSLATABLE_MODEL_MODULES = [
     "yourapp.models",  # Укажите путь к вашим моделям, например 'main.models'
 ]
+
+# Настройки ЮKassa
+YOOKASSA_SHOP_ID = 'your_shop_id'
+YOOKASSA_SECRET_KEY = 'your_secret_key'
+YOOKASSA_RETURN_URL = 'http://yourdomain.com/payment/success/'
+
+# Настройки бронирования
+BOOKING_PREPAYMENT_PERCENT = 30  # 30% предоплата
+BOOKING_REFUND_DAYS = 3  # Возврат при отмене за 3+ дней

@@ -315,7 +315,7 @@
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
                     <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
-                    <p>Уютное пространство для отдыха на природе в Свердловской области.</p>
+                    <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
                         <a href="#"><i class="fab fa-vk"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
@@ -327,18 +327,17 @@
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="/">Главная</a>
-                        <a href="/cottages/">Коттеджи</a>
-                        <a href="/booking/">Бронирование</a>
-                        <a href="/reviews/">Отзывы</a>
-                        <a href="/about/">О нас</a>
+                        <a href="#">Главная</a>
+                        <a href="{% url 'cottages' %}">Коттеджи</a>
+                        <a href="{% url 'all_reviews' %}">Отзывы</a>
+                        <a href="#">О нас</a>
                     </div>
                 </div>
                 
                 <div class="col-lg-3 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
-                        <p><i class="fas fa-map-marker-alt mr-2"></i> Свердловская область, д. Савина</p>
+                        <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
                         <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
                         <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
                     </div>

@@ -1,7 +1,6 @@
-import logging
-import os
+import logging, os, uuid, json
 from datetime import datetime, timedelta
-
+from django.urls import reverse 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -14,10 +13,13 @@ from django.db.models import Avg, Count, Q, Case, When, IntegerField
 from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.views.generic import ListView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from yookassa import Payment as YooPayment
+from yookassa.domain.common import SecurityHelper
 
 from .forms import (
     BookingForm,
@@ -30,8 +32,9 @@ from .forms import (
     HouseForm,
     PostForm,
     UserProfileForm,
+    PaymentMethodForm,
 )
-from .models import Booking, Client, House, Post, Review, Service, Tag
+from .models import Booking, Client, House, Post, Review, Service, Tag, Payment
 
 logger = logging.getLogger(__name__)
 
@@ -162,6 +165,12 @@ def account_view(request):
     else:
         form = ClientForm(instance=client)
 
+     # ДОБАВЬТЕ эти строки для отображения рейтинга в header
+    rating_stats = Review.objects.aggregate(
+        global_avg=Avg("rating"), 
+        total=Count("review_id")
+    )
+    
     return render(
         request,
         "account.html",
@@ -170,6 +179,8 @@ def account_view(request):
             "client": client,
             "bookings": bookings,
             "now": timezone.now().date(),  # Для проверки активных бронирований
+            "global_avg_rating": rating_stats["global_avg"] or 0,
+            "global_total_reviews": rating_stats["total"],
         },
     )
 
@@ -343,6 +354,11 @@ def cottages(request):
             }
         )
 
+    rating_stats = Review.objects.aggregate(
+        global_avg=Avg("rating"), 
+        total=Count("review_id")
+    )
+    
     return render(
         request,
         "cottages.html",
@@ -353,6 +369,8 @@ def cottages(request):
             "guests": guests,
             "guest_range": range(1, 21),
             "filter": house_filter,  # Передаём фильтр для формы
+            "global_avg_rating": rating_stats["global_avg"] or 0,
+            "global_total_reviews": rating_stats["total"],
         },
     )
 
@@ -395,6 +413,11 @@ def cottage_detail(request, slug):
 
     amenities_list = cottage.amenities.split("\n") if cottage.amenities else []
 
+    rating_stats = Review.objects.aggregate(
+        global_avg=Avg("rating"), 
+        total=Count("review_id")
+    )
+    
     return render(
         request,
         "cottage_detail.html",
@@ -405,29 +428,34 @@ def cottage_detail(request, slug):
             "image_url": cottage.get_image_url,
             "image_exists": cottage.image_exists(),
             "amenities_list": amenities_list,
+            "global_avg_rating": rating_stats["global_avg"] or 0,
+            "global_total_reviews": rating_stats["total"],
         },
     )
 
 
 def booking(request):
+    # ПРОВЕРКА АУТЕНТИФИКАЦИИ - если не авторизован, перенаправляем на регистрацию
+    if not request.user.is_authenticated:
+        messages.warning(request, "Для бронирования необходимо войти в систему")
+        return redirect(f"{reverse('login')}?next={request.get_full_path()}")
+
     house_id = request.GET.get("house")
     check_in = request.GET.get("check_in")
     check_out = request.GET.get("check_out")
     guests = request.GET.get("guests", 2)
 
-    # Проверка параметров
-    if not all([house_id, check_in, check_out]):
-        messages.error(request, "Необходимо указать дом, дату заезда и дату выезда")
+    if not all([house_id, check_in, check_out, guests]):
+        messages.error(request, "Необходимо указать все параметры бронирования")
         return redirect("cottages")
 
     try:
-        # Преобразование и валидация дат
         house = House.objects.get(pk=house_id)
         check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
         check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
+        guests_int = int(guests)
         today = timezone.now().date()
 
-        # Дополнительные проверки дат
         if check_in_date < today:
             messages.error(request, "Дата заезда не может быть в прошлом")
             return redirect("cottages")
@@ -439,70 +467,50 @@ def booking(request):
         nights = (check_out_date - check_in_date).days
         house_cost = house.price_per_night * nights
 
-    except House.DoesNotExist:
-        messages.error(request, "Указанный коттедж не найден")
-        return redirect("cottages")
-    except ValueError:
-        messages.error(request, "Некорректный формат даты. Используйте YYYY-MM-DD")
+    except (House.DoesNotExist, ValueError) as e:
+        messages.error(request, "Ошибка в данных бронирования")
         return redirect("cottages")
 
-    # Обработка формы
+    # Обработка POST запроса
     if request.method == 'POST':
-        form = BookingForm(request.POST, user=request.user, house=house)
+        print(f"DEBUG: Processing POST request with house: {house}")
+        print(f"DEBUG: User: {request.user}, authenticated: {request.user.is_authenticated}")
+        
+        post_data = request.POST.copy()
+        form = BookingForm(post_data, user=request.user, house=house)
         
         if form.is_valid():
-            logger.info(f"Form is valid, saving booking")
+            print("DEBUG: Form is valid, saving booking...")
             try:
                 with transaction.atomic():
-                    booking = form.save(commit=False)
-                    booking.house = house
-                    booking.user = request.user
-                    
-                    # Устанавливаем даты из формы
-                    booking.check_in_date = form.cleaned_data['check_in_date']
-                    booking.check_out_date = form.cleaned_data['check_out_date']
-                    booking.guests = form.cleaned_data['guests']
-                    
-                    # Рассчитываем стоимость
-                    nights = (booking.check_out_date - booking.check_in_date).days
-                    base_cost = house.price_per_night * nights
-                    booking.base_cost = base_cost
-                    
-                    # Добавляем стоимость услуг
-                    services = form.cleaned_data.get('services', [])
-                    service_cost = sum(service.price for service in services)
-                    booking.total_cost = base_cost + service_cost
-                    
-                    booking.save()
-                    
-                    # Сохраняем many-to-many поля
-                    form.save_m2m()
-                    
+                    booking = form.save()
+                    print(f"DEBUG: Booking saved successfully! ID: {booking.booking_id}")
                     messages.success(request, "Бронирование успешно создано!")
-                    return redirect('payment', booking_id=booking.id)
-                    
+                    return redirect('payment', booking_id=booking.booking_id)
             except Exception as e:
-                logger.error(f"Booking error: {str(e)}")
-                messages.error(request, "Ошибка при создании бронирования")
+                logger.error(f"Booking save error: {str(e)}", exc_info=True)
+                messages.error(request, f"Ошибка при создании бронирования: {str(e)}")
         else:
+            print(f"DEBUG: Form is invalid. Errors: {form.errors}")
             logger.error(f"Form errors: {form.errors}")
             messages.error(request, "Пожалуйста, исправьте ошибки в форме")
     else:
-        # GET запрос - инициализируем форму с данными
+        # GET запрос - пользователь уже авторизован
         initial_data = {
             'check_in_date': check_in_date,
             'check_out_date': check_out_date,
-            'guests': int(guests),
+            'guests': guests_int,
+            'client_name': request.user.get_full_name(),
+            'email': request.user.email,
+            'phone_number': getattr(request.user, 'phone', ''),
         }
-        
-        if request.user.is_authenticated:
-            initial_data.update({
-                'client_name': request.user.get_full_name(),
-                'email': request.user.email,
-                'phone_number': getattr(request.user, 'phone', ''),
-            })
             
         form = BookingForm(initial=initial_data, user=request.user, house=house)
+
+    rating_stats = Review.objects.aggregate(
+        global_avg=Avg("rating"), 
+        total=Count("review_id")
+    )
 
     return render(
         request,
@@ -513,8 +521,11 @@ def booking(request):
             "check_in": check_in_date,
             "check_out": check_out_date,
             "nights": nights,
+            "guests": guests_int,
             "house_cost": house_cost,
             "services": Service.objects.filter(is_active=True),
+            "global_avg_rating": rating_stats["global_avg"] or 0,
+            "global_total_reviews": rating_stats["total"],
         },
     )
 
@@ -522,7 +533,7 @@ def booking(request):
 @login_required
 def payment(request, booking_id):
     try:
-        booking = Booking.objects.select_related("house_id", "client_id").get(
+        booking = Booking.objects.select_related("house", "client_id").get(
             pk=booking_id
         )
         nights = (booking.check_out_date - booking.check_in_date).days
@@ -532,19 +543,182 @@ def payment(request, booking_id):
         if booking.user != request.user:
             raise Http404("Бронирование не найдено")
 
+        rating_stats = Review.objects.aggregate(
+            global_avg=Avg("rating"), 
+            total=Count("review_id")
+        )
+
+        # Расчет сумм
+        full_amount = booking.total_cost
+        prepayment_amount = (booking.total_cost * getattr(settings, 'BOOKING_PREPAYMENT_PERCENT', 30)) / 100
+        remaining_amount = full_amount - prepayment_amount
+        prepayment_percent = getattr(settings, 'BOOKING_PREPAYMENT_PERCENT', 30)
+        refund_days = getattr(settings, 'BOOKING_REFUND_DAYS', 3)
+
+        if request.method == 'POST':
+            form = PaymentMethodForm(request.POST)
+            if form.is_valid():
+                payment_method = form.cleaned_data['payment_method']
+                
+                # СОЗДАЕМ РЕАЛЬНЫЙ ПЛАТЕЖ В ЮKASSA
+                return create_yookassa_payment(request, booking, payment_method)
+                
+        else:
+            form = PaymentMethodForm()
+
         return render(
             request,
             "payment.html",
             {
                 "booking": booking,
-                "house": booking.house_id,
+                "house": booking.house,
                 "nights": nights,
                 "services": services,
+                "form": form,
+                "full_amount": full_amount,
+                "prepayment_amount": prepayment_amount,
+                "remaining_amount": remaining_amount,
+                "prepayment_percent": prepayment_percent,
+                "refund_days": refund_days,
+                "global_avg_rating": rating_stats["global_avg"] or 0,
+                "global_total_reviews": rating_stats["total"],
             },
         )
 
     except Booking.DoesNotExist:
         raise Http404("Бронирование не найдено")
+
+
+def create_yookassa_payment(request, booking, payment_method):
+    try:
+        # Для тестового режима - сразу имитируем успешный платеж
+        if settings.DEBUG:
+            # Определяем сумму
+            if payment_method == 'full':
+                amount = float(booking.total_cost)
+                payment_type = 'full'
+            else:
+                prepayment_percent = getattr(settings, 'BOOKING_PREPAYMENT_PERCENT', 30)
+                amount = float(booking.total_cost * prepayment_percent / 100)
+                payment_type = 'prepayment'
+            
+            # Создаем запись платежа в базе (используем нашу модель Payment)
+            payment_obj = Payment.objects.create(
+                booking=booking,
+                amount=amount,
+                payment_type=payment_type,
+                status='succeeded',
+                yookassa_payment_id=f"test_{uuid.uuid4()}"
+            )
+            payment_obj.captured_at = timezone.now()
+            payment_obj.save()
+            
+            messages.success(request, f"Тестовый платеж на {amount:.0f} ₽ успешно создан!")
+            return redirect('payment_success', payment_id=payment_obj.id)
+        
+        # Реальная интеграция с ЮKassa
+        else:
+            # Импортируем здесь, чтобы избежать циклических импортов
+            from yookassa import Configuration
+            from yookassa import Payment as YooPayment  # Переименовываем чтобы избежать конфликта
+            
+            # Настраиваем ЮKassa
+            Configuration.account_id = getattr(settings, 'YOOKASSA_SHOP_ID', 'test_shop_id')
+            Configuration.secret_key = getattr(settings, 'YOOKASSA_SECRET_KEY', 'test_secret_key')
+            
+            # Определяем сумму
+            if payment_method == 'full':
+                amount = float(booking.total_cost)
+                payment_type = 'full'
+                description = f"Полная оплата бронирования {booking.house.name}"
+            else:
+                prepayment_percent = getattr(settings, 'BOOKING_PREPAYMENT_PERCENT', 30)
+                amount = float(booking.total_cost * prepayment_percent / 100)
+                payment_type = 'prepayment'
+                description = f"Предоплата {prepayment_percent}% за {booking.house.name}"
+            
+            # Создаем запись платежа в базе (наша модель Payment)
+            payment_obj = Payment.objects.create(
+                booking=booking,
+                amount=amount,
+                payment_type=payment_type,
+                status='pending'
+            )
+            
+            # Создаем платеж в ЮKassa (YooPayment - это класс ЮKassa)
+            idempotence_key = str(uuid.uuid4())
+            
+            yoo_payment = YooPayment.create({
+                "amount": {
+                    "value": f"{amount:.2f}",
+                    "currency": "RUB"
+                },
+                "confirmation": {
+                    "type": "redirect",
+                    "return_url": request.build_absolute_uri(
+                        reverse('payment_success', kwargs={'payment_id': payment_obj.id})
+                    )
+                },
+                "capture": True,
+                "description": description,
+                "metadata": {
+                    "booking_id": booking.booking_id,
+                    "payment_id": payment_obj.id,
+                    "payment_type": payment_type
+                }
+            }, idempotence_key)
+            
+            # Сохраняем ID платежа ЮKassa
+            payment_obj.yookassa_payment_id = yoo_payment.id
+            payment_obj.save()
+            
+            # Перенаправляем на страницу оплаты ЮKassa
+            return redirect(yoo_payment.confirmation.confirmation_url)
+            
+    except Exception as e:
+        logger.error(f"Payment creation error: {str(e)}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
+        
+        # Показываем информативное сообщение об ошибке
+        error_message = "Ошибка при создании платежа. Пожалуйста, попробуйте еще раз."
+        if "No module named 'yookassa'" in str(e):
+            error_message = "Система оплаты временно недоступна. Пожалуйста, попробуйте позже."
+        
+        messages.error(request, error_message)
+        return redirect('payment', booking_id=booking.booking_id)
+
+
+def payment_success(request, payment_id):
+    try:
+        payment = Payment.objects.get(id=payment_id)
+        
+        # Проверяем, что платеж принадлежит текущему пользователю
+        if payment.booking.user != request.user:
+            raise Http404("Платеж не найден")
+        
+        # Обновляем статус бронирования
+        booking = payment.booking
+        # booking.booking_status = 'confirmed'  # Раскомментируйте когда добавите поле
+        # booking.save()
+        
+        messages.success(request, "Оплата прошла успешно! Ваше бронирование подтверждено.")
+        
+        # Получаем статистику для header
+        rating_stats = Review.objects.aggregate(
+            global_avg=Avg("rating"), 
+            total=Count("review_id")
+        )
+        
+        return render(request, 'payment_success.html', {
+            'payment': payment,
+            'booking': booking,
+            'global_avg_rating': rating_stats["global_avg"] or 0,
+            'global_total_reviews': rating_stats["total"],
+        })
+        
+    except Payment.DoesNotExist:
+        raise Http404("Платеж не найден")
 
 
 # Для входа
@@ -785,3 +959,29 @@ class CottagesListView(ListView):
 def user_bookings(request):
     bookings = Booking.objects.filter(user=request.user).select_related("house")
     return render(request, "bookings/user_bookings.html", {"bookings": bookings})
+
+@csrf_exempt
+def yookassa_webhook(request):
+    if request.method == 'POST':
+        # Проверяем подпись уведомления
+        if not SecurityHelper().is_valid_ip(request.META['REMOTE_ADDR']):
+            return JsonResponse({'status': 'invalid ip'}, status=400)
+        
+        event_json = json.loads(request.body)
+        
+        try:
+            # Обрабатываем уведомление
+            payment = Payment.objects.get(yookassa_payment_id=event_json['object']['id'])
+            payment.status = event_json['object']['status']
+            
+            if event_json['object']['status'] == 'succeeded':
+                payment.captured_at = timezone.now()
+                
+            payment.save()
+            
+        except Payment.DoesNotExist:
+            pass
+            
+        return JsonResponse({'status': 'success'})
+    
+    return JsonResponse({'status': 'invalid method'}, status=400)

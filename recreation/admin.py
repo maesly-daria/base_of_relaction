@@ -832,38 +832,60 @@ class BookingServiceAdmin(ExportMixin, admin.ModelAdmin):
 
 
 class PaymentResource(resources.ModelResource):
-    booking = fields.Field(column_name="Бронирование", attribute="booking")
-    amount = fields.Field(column_name="Сумма к оплате", attribute="amount")
-    payment_date = fields.Field(column_name="Дата", attribute="payment_date")
-    payment_method = fields.Field(
-        column_name="Способ оплаты", attribute="payment_method"
-    )
+    booking_id = fields.Field(column_name="ID бронирования", attribute="booking")
+    amount = fields.Field(column_name="Сумма", attribute="amount")
+    payment_type = fields.Field(column_name="Тип оплаты", attribute="payment_type")
+    status = fields.Field(column_name="Статус", attribute="status")
+    payment_date = fields.Field(column_name="Дата платежа", attribute="payment_date")
 
     class Meta:
         model = Payment
-        fields = ("id", "booking", "amount", "payment_date", "payment_method")
+        fields = ("id", "booking_id", "amount", "payment_type", "status", "payment_date")
         export_order = fields
         verbose_name_rus = "Платежи"
 
+    def dehydrate_booking_id(self, obj):
+        return obj.booking.booking_id if obj.booking else "-"
+
 
 @admin.register(Payment)
-class Payment(ExportMixin, admin.ModelAdmin):
+class PaymentAdmin(ExportMixin, admin.ModelAdmin):  # <- ВАЖНО: PaymentAdmin вместо Payment
     resource_class = PaymentResource
     formats = [CustomXLSXFormat]
     list_display = (
-        "payment_id",
+        "id",
         "booking_link",
         "amount",
+        "payment_type",
+        "status",
         "payment_date",
-        "payment_method",
     )
-    search_fields = ("booking__booking_id", "payment_method")
+    search_fields = ("booking__booking_id", "yookassa_payment_id")
     list_display_links = ("booking_link",)
-    list_filter = ("payment_date", "payment_method")
-    readonly_fields = ("payment_id",)
+    list_filter = ("payment_date", "payment_type", "status")
+    readonly_fields = ("id", "payment_date", "captured_at", "yookassa_payment_id")
     raw_id_fields = ["booking"]
     verbose_name = _("Платеж")
     verbose_name_plural = _("Платежи")
+
+    fieldsets = (
+        ('Основная информация', {
+            'fields': (
+                'id', 
+                'booking', 
+                'yookassa_payment_id',
+                'amount',
+                'payment_type',
+                'status'
+            )
+        }),
+        ('Даты', {
+            'fields': (
+                'payment_date',
+                'captured_at'
+            )
+        }),
+    )
 
     @admin.display(description="Бронирование")
     def booking_link(self, obj):
@@ -875,23 +897,8 @@ class Payment(ExportMixin, admin.ModelAdmin):
             )
         return "-"
 
+    def has_add_permission(self, request):
+        return False
 
-class TagResource(resources.ModelResource):
-    name = fields.Field(column_name="Название", attribute="name")
-
-    class Meta:
-        model = Tag
-        fields = ("id", "name")
-        export_order = fields
-        verbose_name_rus = "Теги"
-
-
-@admin.register(Tag)
-class TagAdmin(ExportMixin, admin.ModelAdmin):
-    resource_class = TagResource
-    formats = [CustomXLSXFormat]
-    list_display = ("name",)
-    search_fields = ("name",)
-    list_filter = ("name",)
-    verbose_name = _("Тег")
-    verbose_name_plural = _("Теги")
+    def has_delete_permission(self, request, obj=None):
+        return False

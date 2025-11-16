@@ -60,6 +60,15 @@
             padding: 60px 0;
         }
 
+        .user-info-alert {
+            border-left: 4px solid #28a745;
+            background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+        }
+        .user-info-alert h4 {
+            color: #155724;
+            font-weight: 600;
+        }
+
         .booking-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -313,11 +322,21 @@
                 <div class="booking-header">
                     <h1 class="booking-title">БРОНИРОВАНИЕ</h1>
                 </div>
-                
+                <div class="user-info-alert alert alert-success mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-check fa-2x mr-3"></i>
+                        <div>
+                            <h4 class="mb-1">Добро пожаловать, {{ user.get_full_name }}! <small><a href="{% url 'logout' %}?next={% url 'cottages' %}" class="text-danger">
+                                <i class="fas fa-sign-out-alt"></i> Выйти
+                            </a></small></h4>
+                            <p class="mb-0">Вы успешно авторизованы и можете продолжить бронирование.</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="booking-content">
                     <!-- Блок авторизации -->
                     {% if not user.is_authenticated %}
-                    <div class="auth-alert alert alert-info mb-4">
+                    <!-- div class="auth-alert alert alert-info mb-4">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-info-circle fa-2x mr-3"></i>
                             <div>
@@ -335,7 +354,7 @@
                                <i class="fas fa-user-plus mr-2"></i> Регистрация
                             </a>
                         </div>
-                    </div>
+                    </!-->
                     {% endif %}
 
                     <!-- Детали бронирования - теперь данные будут отображаться -->
@@ -388,72 +407,57 @@
                         <input type="hidden" name="check_out_date" value="{{ check_out|date:'Y-m-d' }}">
                         <input type="hidden" name="guests" value="{{ guests }}">
                         
-                        <!-- Детали бронирования -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h3 class="section-title card-title">Ваше бронирование</h3>
-                                <!-- ... существующие детали ... -->
-                            </div>
+                        <!-- Добавьте этот блок после заголовка формы для отладки -->
+                        <div class="debug-info alert alert-info">
+                            <strong>Отладочная информация:</strong><br>
+                            Коттедж: {{ house.name }} (ID: {{ house.house_id }})<br>
+                            Дата заезда: {{ check_in|date:"d.m.Y" }}<br>
+                            Дата выезда: {{ check_out|date:"d.m.Y" }}<br>
+                            Гостей: {{ guests }}<br>
+                            Ночей: {{ nights }}
                         </div>
 
-                        <!-- НАЧАЛО БЛОКА С ФОРМОЙ -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h3 class="section-title card-title">Контактные данные</h3>
-                                
-                                {% if user.is_authenticated %}
-                                    <div class="alert alert-info mb-4">
-                                        <i class="fas fa-info-circle mr-2"></i>
-                                        Вы вошли как {{ user.get_full_name|default:user.username }}
+                        <!-- Остальная часть формы -->
+                        {% for field in form %}
+                            {% if field.name != 'services' and field.name != 'check_in_date' and field.name != 'check_out_date' and field.name != 'guests' %}
+                            <div class="form-group">
+                                {{ field.label_tag }}
+                                {% if field.field.required %}
+                                    <span class="text-danger">*</span>
+                                {% endif %}
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in field.errors %}
+                                            {{ error }}
+                                        {% endfor %}
                                     </div>
                                 {% endif %}
-                                
-                                <!-- новый блок -->
-                                {% for field in form %}
-                                    {% if field.name != 'services' %}
-                                    <div class="form-group">
-                                        {{ field.label_tag }}
-                                        {% if field.field.required %}
-                                            <span class="text-danger">*</span>
-                                        {% endif %}
-                                        {{ field }}
-                                        {% if field.errors %}
-                                            <div class="text-danger small">
-                                                {% for error in field.errors %}
-                                                    {{ error }}
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    {% endif %}
-                                {% endfor %}
-                                <!-- КОНЕЦ БЛОКА С ФОРМОЙ -->
-
-                                <!-- Блок услуг (отдельно, так как у него особое оформление) -->
-                                <h4 class="mt-4 mb-3">Дополнительные услуги</h4>
-                                <!-- Replace the existing services section with this -->
-                                <div class="row">
-                                    {% for service in services %}
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" 
-                                                name="services" 
-                                                id="service-{{ service.id }}" 
-                                                value="{{ service.id }}"
-                                                {% if service.id in selected_services %}checked{% endif %}>
-                                            <label class="form-check-label d-flex justify-content-between" 
-                                                for="service-{{ service.id }}">
-                                                <span>{{ service.name }}</span>
-                                                <span class="text-primary">{{ service.price }} ₽</span>
-                                            </label>
-                                            <p class="text-muted small mt-1">{{ service.description }}</p>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <!-- Блок услуг -->
+                        <h4 class="mt-4 mb-3">Дополнительные услуги</h4>
+                        <div class="row">
+                            {% for service in services %}
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" 
+                                        name="services" 
+                                        id="service-{{ service.service_id }}" 
+                                        value="{{ service.service_id }}">
+                                    <label class="form-check-label d-flex justify-content-between" 
+                                        for="service-{{ service.service_id }}">
+                                        <span>{{ service.name }}</span>
+                                        <span class="text-primary">{{ service.price }} ₽</span>
+                                    </label>
+                                    <p class="text-muted small mt-1">{{ service.description }}</p>
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-
+                        
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-primary btn-lg py-3 px-5">
                                 <i class="far fa-calendar-check mr-2"></i> Подтвердить бронирование
@@ -553,7 +557,7 @@
             return true;
         });
     });
-    
+
     document.addEventListener('DOMContentLoaded', function() {
     // Парсим параметры URL
     function getUrlParams() {

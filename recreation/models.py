@@ -455,7 +455,6 @@ class Booking(models.Model):
         "House",
         on_delete=models.CASCADE,
         verbose_name="Коттедж",
-        db_column="house_id",  # Явно указываем имя колонки в БД
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -472,33 +471,47 @@ class Booking(models.Model):
     client_name = models.CharField(
         max_length=255,
         verbose_name="Имя клиента",
-        default="Не указано",  # Add default value here
-        blank=False,
-        null=False,
+        default="Не указано",
     )
     base_cost = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name="Базовая стоимость",
-        default=0.00,  # Add this line
+        default=0.00,
     )
     total_cost = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name="Общая стоимость"
+        max_digits=10, decimal_places=2, verbose_name="Общая стоимость", default=0.00
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     services = models.ManyToManyField(
         "Service", blank=True, verbose_name="Дополнительные услуги"
     )
     comment = RichTextField(verbose_name="Комментарий", blank=True, null=True)
-    history = HistoricalRecords(excluded_fields=["total_cost"])  # Исключаем поле
+    history = HistoricalRecords(excluded_fields=["total_cost"])
 
     @property
     def nights(self):
-        return (self.check_out_date - self.check_in_date).days
+        if self.check_in_date and self.check_out_date:
+            return (self.check_out_date - self.check_in_date).days
+        return 0
+    
+    BOOKING_STATUS_CHOICES = [
+        ('pending', 'Ожидает оплаты'),
+        ('confirmed', 'Подтверждено'),
+        ('cancelled', 'Отменено'),
+        ('completed', 'Завершено'),
+    ]
+    
+    #booking_status = models.CharField(
+    #    max_length=20, 
+    #    choices=BOOKING_STATUS_CHOICES, 
+    #    default='pending',
+    #    verbose_name="Статус бронирования"
+    #)
 
     def clean(self):
         # Проверяем, что все обязательные поля заполнены
-        if not all([self.check_in_date, self.check_out_date, self.guests, self.house]):
+        if not all([self.check_in_date, self.check_out_date, self.guests]):
             missing_fields = []
             if not self.check_in_date:
                 missing_fields.append("дата заезда")
@@ -506,12 +519,14 @@ class Booking(models.Model):
                 missing_fields.append("дата выезда")
             if not self.guests:
                 missing_fields.append("количество гостей")
-            if not self.house:
-                missing_fields.append("коттедж")
 
             raise ValidationError(
                 f"Не заполнены обязательные поля: {', '.join(missing_fields)}"
             )
+
+        # Проверка house - теперь через hasattr чтобы избежать RelatedObjectDoesNotExist
+        if not hasattr(self, 'house') or not self.house:
+            raise ValidationError("Не указан коттедж для бронирования")
 
         # 1. Проверка, что дата выезда > даты заезда
         if self.check_out_date <= self.check_in_date:
@@ -522,26 +537,23 @@ class Booking(models.Model):
             raise ValidationError("Нельзя бронировать коттедж на прошедшую дату.")
 
         # 3. Проверяем количество гостей
-        if not hasattr(self, "guests") or self.guests is None:
-            raise ValidationError("Не указано количество гостей")
-
         if self.guests < 1:
             raise ValidationError("Количество гостей должно быть не менее 1")
 
         # 4. Проверяем вместимость дома
-        if hasattr(self.house, "capacity") and self.house.capacity:
+        if hasattr(self.house, 'capacity') and self.house.capacity:
             if self.guests > self.house.capacity:
                 raise ValidationError(
                     f"Количество гостей ({self.guests}) превышает вместимость коттеджа ({self.house.capacity})"
                 )
 
     def save(self, *args, **kwargs):
-        self.full_clean()  # Автоматически вызывает clean() перед сохранением
+        self.full_clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Бронирование {self.booking_id} для {self.house_id}"
-
+        return f"Бронирование {self.booking_id} для {self.house.name if self.house else 'неизвестного дома'}"
+    
     class Meta:
         verbose_name = "Бронирование"
         verbose_name_plural = "Бронирования"
@@ -585,20 +597,72 @@ class BookingService(models.Model):
 
 
 class Payment(models.Model):
-    payment_id = models.AutoField(primary_key=True, verbose_name="ID платежа")
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Ожидает оплаты'),
+        ('succeeded', 'Оплачено'),
+        ('canceled', 'Отменено'),
+        ('waiting_for_capture', 'Ожидает подтверждения'),
+        ('refunded', 'Возвращено'),
+    ]
+    
+    PAYMENT_TYPE_CHOICES = [
+        ('full', 'Полная оплата'),
+        ('prepayment', 'Предоплата'),
+    ]
+
+    id = models.AutoField(primary_key=True, verbose_name="ID платежа")
     booking = models.ForeignKey(
         Booking, on_delete=models.CASCADE, verbose_name="Бронирование"
     )
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Сумма")
-    payment_date = models.DateField(verbose_name="Дата платежа")
-    payment_method = models.CharField(max_length=50, verbose_name="Способ оплаты")
-
+    yookassa_payment_id = models.CharField(
+        max_length=100, 
+        blank=True, 
+        null=True,  # Добавьте null=True для обратной совместимости
+        verbose_name="ID платежа ЮKassa"
+    )
+    amount = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        verbose_name="Сумма"
+    )
+    payment_type = models.CharField(
+        max_length=20, 
+        choices=PAYMENT_TYPE_CHOICES, 
+        verbose_name="Тип оплаты"
+    )
+    status = models.CharField(
+        max_length=20, 
+        choices=PAYMENT_STATUS_CHOICES, 
+        default='pending', 
+        verbose_name="Статус"
+    )
+    payment_date = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name="Дата создания"
+    )
+    captured_at = models.DateTimeField(
+        null=True, 
+        blank=True, 
+        verbose_name="Дата подтверждения"
+    )
+    
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
+        ordering = ['-payment_date']
 
     def __str__(self):
-        return f"Платеж {self.payment_id} для бронирования {self.booking.booking_id}"
+        return f"Платеж {self.id} - {self.amount} ₽ ({self.get_status_display()})"
+
+    @property
+    def booking_id_display(self):
+        """Отображаемый ID бронирования"""
+        return self.booking.booking_id if self.booking else '-'
+
+    @property
+    def payment_method_display(self):
+        """Отображаемый метод платежа"""
+        return self.get_payment_type_display()
 
 
 User = get_user_model()
