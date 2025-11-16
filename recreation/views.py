@@ -447,52 +447,62 @@ def booking(request):
         return redirect("cottages")
 
     # Обработка формы
-    if request.method == "POST":
-        form = BookingForm(
-            request.POST,
-            user=request.user,
-            house=house,
-            initial={
-                "check_in_date": check_in_date,
-                "check_out_date": check_out_date,
-                "guests": guests,
-            },
-        )
-
+    if request.method == 'POST':
+        form = BookingForm(request.POST, user=request.user, house=house)
+        
         if form.is_valid():
-            logger.info("Форма валидна")
+            logger.info(f"Form is valid, saving booking")
             try:
                 with transaction.atomic():
                     booking = form.save(commit=False)
                     booking.house = house
-                    booking.total_cost = house_cost
-
+                    booking.user = request.user
+                    
+                    # Устанавливаем даты из формы
+                    booking.check_in_date = form.cleaned_data['check_in_date']
+                    booking.check_out_date = form.cleaned_data['check_out_date']
+                    booking.guests = form.cleaned_data['guests']
+                    
+                    # Рассчитываем стоимость
+                    nights = (booking.check_out_date - booking.check_in_date).days
+                    base_cost = house.price_per_night * nights
+                    booking.base_cost = base_cost
+                    
                     # Добавляем стоимость услуг
-                    services = form.cleaned_data.get("services", [])
-                    if services:
-                        booking.total_cost += sum(s.price for s in services)
-
+                    services = form.cleaned_data.get('services', [])
+                    service_cost = sum(service.price for service in services)
+                    booking.total_cost = base_cost + service_cost
+                    
                     booking.save()
-                    booking.services.set(services)
-
-                    # Перенаправляем на страницу оплаты с ID бронирования
-                    return redirect("payment", booking_id=booking.id)
-
+                    
+                    # Сохраняем many-to-many поля
+                    form.save_m2m()
+                    
+                    messages.success(request, "Бронирование успешно создано!")
+                    return redirect('payment', booking_id=booking.id)
+                    
             except Exception as e:
+                logger.error(f"Booking error: {str(e)}")
                 messages.error(request, "Ошибка при создании бронирования")
-                logger.error(
-                    f"Booking error for user {request.user.id}: {str(e)}", exc_info=True
-                )
+        else:
+            logger.error(f"Form errors: {form.errors}")
+            messages.error(request, "Пожалуйста, исправьте ошибки в форме")
     else:
-        form = BookingForm(
-            initial={
-                "check_in_date": check_in_date,
-                "check_out_date": check_out_date,
-                "guests": guests,
-            },
-            user=request.user,
-            house=house,
-        )
+        # GET запрос - инициализируем форму с данными
+        initial_data = {
+            'check_in_date': check_in_date,
+            'check_out_date': check_out_date,
+            'guests': int(guests),
+        }
+        
+        if request.user.is_authenticated:
+            initial_data.update({
+                'client_name': request.user.get_full_name(),
+                'email': request.user.email,
+                'phone_number': getattr(request.user, 'phone', ''),
+            })
+            
+        form = BookingForm(initial=initial_data, user=request.user, house=house)
 
     return render(
         request,
@@ -504,7 +514,7 @@ def booking(request):
             "check_out": check_out_date,
             "nights": nights,
             "house_cost": house_cost,
-            "services": Service.objects.all(),
+            "services": Service.objects.filter(is_active=True),
         },
     )
 

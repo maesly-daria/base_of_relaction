@@ -455,8 +455,6 @@ class Booking(models.Model):
         "House",
         on_delete=models.CASCADE,
         verbose_name="Коттедж",
-        null=True,  # Temporary
-        blank=True,
         db_column="house_id",  # Явно указываем имя колонки в БД
     )
     user = models.ForeignKey(

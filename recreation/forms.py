@@ -308,18 +308,21 @@ class BookingForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"class": "form-control"}),
         validators=[RegexValidator(regex=r"^\+7\d{10}$")],
     )
+
+    check_in_date = forms.DateField(widget=forms.HiddenInput())
+    check_out_date = forms.DateField(widget=forms.HiddenInput())
+    guests = forms.IntegerField(widget=forms.HiddenInput())
+
     services = forms.ModelMultipleChoiceField(
         queryset=Service.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    # check_in_date = forms.DateField(widget=forms.HiddenInput())
-    # check_out_date = forms.DateField(widget=forms.HiddenInput())
-    # guests = forms.IntegerField(widget=forms.HiddenInput())
-
+    
     class Meta:
         model = Booking
-        fields = ["client_name", "email", "phone_number", "services", "comment"]
+        fields = ["client_name", "email", "phone_number", "services", "comment", 
+                 "check_in_date", "check_out_date", "guests"]
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)

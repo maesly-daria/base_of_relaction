@@ -382,6 +382,11 @@
                     <!-- Внутри блока с формой, где-то так: -->
                     <form method="POST" id="booking-form">
                         {% csrf_token %}
+
+                        <!-- Скрытые поля для дат -->
+                        <input type="hidden" name="check_in_date" value="{{ check_in|date:'Y-m-d' }}">
+                        <input type="hidden" name="check_out_date" value="{{ check_out|date:'Y-m-d' }}">
+                        <input type="hidden" name="guests" value="{{ guests }}">
                         
                         <!-- Детали бронирования -->
                         <div class="card mb-4">
@@ -522,7 +527,33 @@
     </footer>
 
     <!-- Скрипты -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script>
+    $(document).ready(function() {
+        // Маска для телефона
+        $('#id_phone_number').mask('+7(000)000-00-00', {
+            placeholder: '+7(___)___-__-__'
+        });
+        
+        // Автоматическое добавление +7 при фокусе, если поле пустое
+        $('#id_phone_number').on('focus', function() {
+            if (!$(this).val()) {
+                $(this).val('+7');
+            }
+        });
+        
+        // Валидация телефона перед отправкой формы
+        $('#booking-form').on('submit', function() {
+            var phone = $('#id_phone_number').val().replace(/\D/g, '');
+            if (phone.length !== 11) {
+                alert('Пожалуйста, введите корректный номер телефона');
+                $('#id_phone_number').focus();
+                return false;
+            }
+            return true;
+        });
+    });
+    
     document.addEventListener('DOMContentLoaded', function() {
     // Парсим параметры URL
     function getUrlParams() {
