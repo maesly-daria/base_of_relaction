@@ -31,18 +31,60 @@
             overflow-x: hidden;
         }
 
-        .add_review {
-            background-color: #864421;
-            align-item: center;
-            border-color: #864421;
+        /* Коричневые кнопки */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transition: var(--transition);
         }
 
-        .add_review:hover {
-            background-color: #000;
-            border-color: #000;
+        .btn-primary:hover {
+            background-color: var(--dark-brown);
+            border-color: var(--dark-brown);
+            transform: translateY(-2px);
         }
 
-        /* Header - как в home.html */
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--light-text);
+            transform: translateY(-2px);
+        }
+
+        /* Header */
+        .global-stats {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ffc107;
+            display: inline-block;
+        }
+
+        .star-rating .fas.fa-star,
+        .star-rating .fas.fa-star-half-alt {
+            color: #ffc107;
+        }
+
+        .star-rating .far.fa-star {
+            color: #ddd;
+        }
+
+        .review-count {
+            font-size: 16px;
+            color: #666;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
         .navbar {
             background-color: var(--secondary-color) !important;
             padding: 15px 0;
@@ -114,20 +156,24 @@
             margin-bottom: 15px;
             font-size: 18px;
         }
-        rating-stars {
+
+        .rating-stars {
             display: flex;
             flex-direction: row-reverse;
             justify-content: flex-end;
         }
+
         .rating-stars input {
             display: none;
         }
+
         .rating-stars label {
             color: #ddd;
             font-size: 1.5rem;
             padding: 0 5px;
             cursor: pointer;
         }
+
         .rating-stars input:checked ~ label,
         .rating-stars input:hover ~ label,
         .rating-stars label:hover ~ input:checked ~ label {
@@ -214,7 +260,14 @@
             color: var(--primary-color);
         }
 
-        /* Footer - как в home.html */
+        /* Адаптивное расположение кнопок */
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Footer */
         .footer {
             background-color: #fff;
             color: #000;
@@ -231,6 +284,7 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .footer-links a {
@@ -279,40 +333,118 @@
             min-height: 250px;
         }
 
+        /* Модальное окно с коричневым заголовком */
+        .modal-header.bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+
+        /* Адаптивность */
         @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-buttons {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+            
+            .header-buttons .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .section-title {
+                font-size: 28px;
+                margin-bottom: 30px;
+            }
+            
+            .reviews-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .review-card {
+                padding: 20px;
+            }
+            
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .review-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
             .map-container iframe {
                 height: 200px;
             }
         }
 
-        @media (max-width: 768px) {
-            .reviews-container {
-                grid-template-columns: 1fr;
+        @media (max-width: 576px) {
+            .section-title {
+                font-size: 24px;
             }
             
-            .section-title {
-                font-size: 30px;
+            .reviews-section {
+                padding: 40px 0;
+            }
+            
+            .navbar-brand img {
+                height: 60px;
+            }
+        }
+
+        /* Для очень маленьких экранов */
+        @media (max-width: 400px) {
+            .review-actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .review-actions .btn {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-     <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="global-stats">
+                <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
+                    {% for i in "12345" %}
+                        {% if global_avg_rating >= forloop.counter %}
+                            <i class="fas fa-star active"></i>
+                        {% elif global_avg_rating|add:-0.5 >= forloop.counter|add:-1 %}
+                            <i class="fas fa-star-half-alt active"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="review-count">({{ global_total_reviews }})</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cottages' %}">Коттеджи</a>
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
@@ -323,6 +455,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -331,28 +466,37 @@
     <!-- Reviews Section -->
     <section class="reviews-section">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="section-title">
+            <!-- Заголовок и кнопки -->
+            <div class="header-section d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0">
                     {% if user_filter %}
                     Мои отзывы
                     {% else %}
                     Отзывы наших гостей
                     {% endif %}
                 </h2>
-                <div>
+                <div class="header-buttons">
                     {% if user.is_authenticated %}
                         {% if not user_filter %}
-                        <a href="?user=me" class="btn btn-outline-primary mr-2">
-                            <i class="fas fa-user"></i> Мои отзывы
+                        <a href="?user=me" class="btn btn-outline-primary">
+                            <i class="fas fa-user mr-2"></i> Мои отзывы
                         </a>
                         {% else %}
-                        <a href="{% url 'all_reviews' %}" class="btn btn-outline-secondary mr-2">
-                            <i class="fas fa-list"></i> Все отзывы
+                        <a href="{% url 'all_reviews' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list mr-2"></i> Все отзывы
                         </a>
                         {% endif %}
-                        <button class="btn btn-primary add_review" data-toggle="modal" data-target="#reviewModal">
-                            <i class="fas fa-plus"></i> Добавить отзыв
-                        </button>
+                        
+                        {% if houses %}
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#reviewModal">
+                                <i class="fas fa-plus mr-2"></i> Добавить отзыв
+                            </button>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled title="Сначала забронируйте коттедж">
+                                <i class="fas fa-plus mr-2"></i> Добавить отзыв
+                            </button>
+                            <small class="text-muted d-block mt-1">Доступно после бронирования</small>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -381,12 +525,23 @@
                                 
                                 <div class="form-group">
                                     <label for="house_id">Коттедж *</label>
-                                    <select class="form-control" name="house_id" id="house_id" required>
-                                        <option value="">Выберите коттедж</option>
-                                        {% for house in houses %}
-                                            <option value="{{ house.pk }}">{{ house.name }}</option>
-                                        {% endfor %}
-                                    </select>
+                                    {% if houses %}
+                                        <select class="form-control" name="house_id" id="house_id" required>
+                                            <option value="">Выберите коттедж</option>
+                                            {% for house in houses %}
+                                                <option value="{{ house.pk }}">{{ house.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-muted">Вы можете оставить отзыв только на коттеджи, которые бронировали</small>
+                                    {% else %}
+                                        <select class="form-control" disabled>
+                                            <option value="">У вас нет завершенных бронирований</option>
+                                        </select>
+                                        <small class="form-text text-warning">
+                                            <i class="fas fa-info-circle"></i> 
+                                            Чтобы оставить отзыв, необходимо сначала забронировать коттедж
+                                        </small>
+                                    {% endif %}
                                 </div>
                                 
                                 <div class="form-group">
@@ -401,12 +556,15 @@
                                 
                                 <div class="form-group">
                                     <label for="comment">Комментарий *</label>
-                                    <textarea class="form-control" name="comment" id="comment" rows="4" required></textarea>
+                                    <textarea class="form-control" name="comment" id="comment" rows="4" required 
+                                            placeholder="Поделитесь своими впечатлениями об отдыхе..."></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                                <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+                                <button type="submit" class="btn btn-primary" {% if not houses %}disabled{% endif %}>
+                                    Отправить отзыв
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -414,10 +572,8 @@
             </div>
             {% endif %}
 
-            
-
             <!-- Список отзывов -->
-           <div class="reviews-container">
+            <div class="reviews-container">
                 {% for review in page_obj %}
                 <div class="review-card {% if review.is_mine %}my-review{% endif %}">
                     <div class="review-header">
@@ -436,12 +592,12 @@
                             <a href="{% url 'review_edit' review.pk %}" 
                             class="btn btn-sm btn-outline-primary edit-review" 
                             data-id="{{ review.pk }}">
-                                <i class="fas fa-edit"></i> Редактировать
+                                <i class="fas fa-edit mr-1"></i> Редактировать
                             </a>
                             <a href="{% url 'review_delete' review.pk %}" 
                             class="btn btn-sm btn-outline-danger delete-review" 
                             data-id="{{ review.pk }}">
-                                <i class="fas fa-trash-alt"></i> Удалить
+                                <i class="fas fa-trash-alt mr-1"></i> Удалить
                             </a>
                         </div>
                         {% endif %}
@@ -451,7 +607,7 @@
                     
                     <div class="review-footer">
                         <p class="review-author">
-                            {{ review.client_id.user.username|default:review.client_id.first_name|default:"Аноним" }}
+                            {{ review.client_id.user.get_full_name|default:review.client_id.user.first_name|default:review.client_id.user.username|default:"FurTree" }}
                         </p>
                         <p class="review-date">
                             {{ review.created_at|date:"d.m.Y H:i" }}
@@ -512,28 +668,34 @@
         </div>
     </section>
 
-    <!-- Footer как в home.html -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
-                    <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
                     <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="#">Главная</a>
-                        <a href="{% url 'cottages' %}">Коттеджи</a>
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
                         <a href="{% url 'all_reviews' %}">Отзывы</a>
-                        <a href="#">О нас</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
                     </div>
                 </div>
                 
@@ -541,8 +703,12 @@
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
                         <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
                     </div>
                 </div>
                 
@@ -550,14 +716,14 @@
                     <h3 class="footer-title">Мы на карте</h3>
                     <div class="map-container">
                         <iframe 
-                            src="https://yandex.ru/map-widget/v1/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                             width="100%" 
                             height="250"
                             frameborder="0" 
                             allowfullscreen="true"
-                            style="border: 1px solid #ddd; border-radius: 4px;">
+                            style="border: 1px solid #ddd; border-radius: 8px;">
                         </iframe>
-                        <a href="https://yandex.ru/maps/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                         target="_blank" 
                         class="btn btn-sm btn-outline-secondary mt-2 d-block">
                             Открыть в Яндекс.Картах
@@ -567,7 +733,7 @@
             </div>
             
             <div class="copyright">
-                <p class="mb-0">© 2025 База отдыха FurTree. Все права защищены.</p>
+                <p class="mb-0">© 2026 База отдыха Ёлки. Все права защищены.</p>
                 <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
             </div>
         </div>

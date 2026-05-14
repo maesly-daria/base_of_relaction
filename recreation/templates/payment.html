@@ -157,6 +157,11 @@
             margin-bottom: 30px;
         }
 
+        .package-includes {
+            border-left: 4px solid #ffc107;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
+
         .detail-item {
             display: flex;
             justify-content: between;
@@ -262,6 +267,7 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .footer-links a {
@@ -382,10 +388,10 @@
 </head>
 <body>
     <!-- Header -->
-     <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
             </a>
             <div class="global-stats">
                 <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
@@ -401,16 +407,16 @@
                     <span class="review-count">({{ global_total_reviews }})</span>
                 </div>
             </div>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cottages' %}">Коттеджи</a>
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
@@ -420,6 +426,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
                     </li>
                 </ul>
             </div>
@@ -439,6 +448,20 @@
         {% endfor %}
     </div>
     {% endif %}
+
+    {% comment %} <!-- Добавьте этот блок в payment.html после messages -->
+    {% if debug_info %}
+    <div class="alert alert-warning">
+        <h5>Отладочная информация:</h5>
+        <ul>
+            <li>Пакетное бронирование: {% if debug_info.package_booking_exists %}ДА{% else %}НЕТ{% endif %}</li>
+            <li>Общая стоимость: {{ debug_info.booking_total_cost }}</li>
+            <li>Услуг в бронировании: {{ debug_info.services_count }}</li>
+            <li>Пакетных услуг: {{ debug_info.package_services_count }}</li>
+            <li>Package booking object: {{ package_booking }}</li>
+        </ul>
+    </div>
+    {% endif %} {% endcomment %}
 
     <!-- Main Content -->
     <div class="container mt-5 pt-5">
@@ -506,6 +529,15 @@
                                     <span class="detail-label"><i class="fas fa-envelope mr-2"></i>Email</span>
                                     <span class="detail-value">{{ booking.email }}</span>
                                 </div>
+                                <!-- Информация о пакете в деталях бронирования -->
+                                {% if package_booking %}
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <i class="fas fa-crown text-warning mr-2"></i>Пакет услуг
+                                    </span>
+                                    <span class="detail-value">{{ package_booking.travel_package.name }}</span>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -516,25 +548,87 @@
                             <i class="fas fa-receipt mr-2"></i>Детали оплаты
                         </h5>
                         
+                        <!-- В разделе "Детали оплаты" -->
                         <div class="booking-details">
-                            <div class="detail-item">
-                                <span class="detail-label">
-                                    <i class="fas fa-bed text-primary mr-2"></i>Проживание
-                                </span>
-                                <span class="detail-value">{{ booking.base_cost|floatformat:0 }} ₽</span>
-                            </div>
-                            
-                            {% if booking.services.all %}
-                                {% for service in booking.services.all %}
+                            {% if package_booking %}
+                                <!-- Отображение для пакетного бронирования -->
                                 <div class="detail-item">
                                     <span class="detail-label">
-                                        <i class="fas fa-plus-circle text-success mr-2"></i>{{ service.name }}
+                                        <i class="fas fa-crown text-warning mr-2"></i>Пакет "{{ package_booking.travel_package.name }}"
                                     </span>
-                                    <span class="detail-value">+ {{ service.price|floatformat:0 }} ₽</span>
+                                    <span class="detail-value">{{ package_booking.total_package_price|floatformat:0 }} ₽</span>
                                 </div>
-                                {% endfor %}
+                                {% comment %} <!-- Добавьте этот блок в payment.html для отладки -->
+                                <div class="alert alert-warning">
+                                    <strong>Debug info:</strong><br>
+                                    Package booking: {{ package_booking }}<br>
+                                    Booking ID: {{ booking.booking_id }}<br>
+                                    Total cost: {{ booking.total_cost }}<br>
+                                    {% if package_booking %}
+                                        Package name: {{ package_booking.travel_package.name }}<br>
+                                        Package price: {{ package_booking.total_package_price }}
+                                    {% endif %}
+                                </div> {% endcomment %}
+                                <div class="package-includes mt-3 p-3 bg-light rounded">
+                                    <h6 class="mb-3">
+                                        <i class="fas fa-gift mr-2 text-success"></i>Пакет включает:
+                                    </h6>
+                                    {% for service in package_booking.travel_package.options.all %}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-check text-success mr-2 small"></i>
+                                        <small class="text-dark">{{ service.name }}</small>
+                                        {% if service.price > 0 %}
+                                        <small class="text-muted ml-2">({{ service.price|floatformat:0 }} ₽)</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                    
+                                    {% if package_booking.selected_options.exists %}
+                                    <h6 class="mt-3 mb-2">
+                                        <i class="fas fa-star mr-2 text-primary"></i>Дополнительные опции:
+                                    </h6>
+                                    {% for option in package_booking.selected_options.all %}
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-plus-circle text-primary mr-2 small"></i>
+                                        <small class="text-dark">{{ option.name }}</small>
+                                        {% if option.price > 0 %}
+                                        <small class="text-muted ml-2">({{ option.price|floatformat:0 }} ₽)</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                    {% endif %}
+                                </div>
+                                
+                            {% else %}
+                                <!-- Отображение для обычного бронирования -->
+                                <div class="detail-item">
+                                    <span class="detail-label">
+                                        <i class="fas fa-bed text-primary mr-2"></i>Проживание ({{ nights }} ночей)
+                                    </span>
+                                    <span class="detail-value">{{ booking.house.price_per_night|floatformat:0 }} ₽ × {{ nights }} = {{ booking.base_cost|floatformat:0 }} ₽</span>
+                                </div>
+                                
+                                {% if services %}
+                                    {% for service in services %}
+                                    <div class="detail-item">
+                                        <span class="detail-label">
+                                            <i class="fas fa-plus-circle text-success mr-2"></i>{{ service.name }}
+                                        </span>
+                                        <span class="detail-value">+ {{ service.price|floatformat:0 }} ₽</span>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
                             {% endif %}
                             
+                            {% comment %} {% if debug %}
+                            <div class="alert alert-info">
+                                <strong>Debug info:</strong><br>
+                                Package booking: {{ package_booking }}<br>
+                                Booking ID: {{ booking.booking_id }}<br>
+                                Total cost: {{ booking.total_cost }}
+                            </div>
+                            {% endif %} {% endcomment %}
+
                             <div class="detail-item" style="border-top: 2px solid var(--primary-color); padding-top: 20px;">
                                 <span class="detail-label"><strong>Итого к оплате</strong></span>
                                 <span class="detail-value" style="font-size: 1.3em; color: var(--primary-color);">
@@ -599,6 +693,114 @@
                         </form>
                     </div>
 
+                    {% comment %} <div class="fade-in mt-4">
+                        <h5 class="mb-4 text-center">
+                            <i class="fas fa-mobile-alt mr-2"></i>Способы оплаты
+                        </h5>
+                        
+                        {% comment %} <!-- Т-Банк (Тинькофф) -->
+                        <div class="payment-option" onclick="document.getElementById('payment_tbank').checked = true;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" 
+                                    id="payment_tbank" value="tbank">
+                                <label class="form-check-label" for="payment_tbank">
+                                    <strong>Т-Банк (Тинькофф)</strong>
+                                </label>
+                            </div>
+                            <div class="payment-amount">{{ full_amount|floatformat:0 }} ₽</div>
+                            <small class="text-muted">
+                                <i class="fas fa-credit-card mr-1"></i> 
+                                Оплата картой или через СБП. Быстро и безопасно.
+                            </small>
+                        </div> {% endcomment %}
+                        
+                        <!-- Полная оплата онлайн (ЮKassa) -->
+                        {% comment %} <div class="payment-option" onclick="document.getElementById('payment_full').checked = true;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" 
+                                    id="payment_full" value="full" checked>
+                                <label class="form-check-label" for="payment_full">
+                                    <strong>Полная оплата онлайн</strong>
+                                </label>
+                            </div>
+                            <div class="payment-amount">{{ full_amount|floatformat:0 }} ₽</div>
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt mr-1"></i>Безопасная оплата через ЮKassa
+                            </small>
+                        </div>
+                        
+                        <!-- Предоплата -->
+                        <div class="payment-option" onclick="document.getElementById('payment_prepayment').checked = true;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" 
+                                    id="payment_prepayment" value="prepayment">
+                                <label class="form-check-label" for="payment_prepayment">
+                                    <strong>Предоплата {{ prepayment_percent }}%</strong>
+                                </label>
+                            </div>
+                            <div class="payment-amount" style="color: var(--success-color);">
+                                {{ prepayment_amount|floatformat:0 }} ₽
+                            </div>
+                            <small class="text-muted">
+                                Остаток {{ remaining_amount|floatformat:0 }} ₽ оплачивается на месте
+                            </small>
+                        </div>
+                    </div> {% endcomment %}
+{% comment %} 
+                    <!-- Модальное окно для Т-Банк перевода -->
+                    <div class="modal fade" id="tbankModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Перевод через Т-Банк</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <p><strong>Номер для перевода:</strong></p>
+                                    <h4 class="text-primary">+7 (902) 634-47-57</h4>
+                                    <p class="mt-3"><strong>Сумма:</strong> {{ full_amount|floatformat:0 }} ₽</p>
+                                    <p><strong>Комментарий к переводу:</strong></p>
+                                    <p class="bg-light p-2 rounded">Бронирование №{{ booking.booking_id }}</p>
+                                    
+                                    <div class="alert alert-info mt-3">
+                                        <small>
+                                            <i class="fas fa-info-circle"></i>
+                                            После перевода пришлите скриншот чека в WhatsApp для подтверждения
+                                        </small>
+                                    </div>
+                                    
+                                    <a href="https://wa.me/79026344757?text=Подтверждаю%20оплату%20бронирования%20№{{ booking.booking_id }}" 
+                                    class="btn btn-success mt-2" target="_blank">
+                                        <i class="fab fa-whatsapp"></i> Отправить чек в WhatsApp
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Модальное окно для QR-кода -->
+                    <div class="modal fade" id="qrModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">QR-код для перевода</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ qr_data|urlencode }}" 
+                                        alt="QR-код для оплаты" class="img-fluid mb-3">
+                                    <p class="small text-muted">
+                                        Отсканируйте QR-код в приложении вашего банка для перевода
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
+
                     <!-- Booking ID -->
                     <div class="alert alert-info mt-4 fade-in text-center">
                         <i class="fas fa-info-circle mr-2"></i>
@@ -614,23 +816,29 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
-                    <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
                     <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="#">Главная</a>
-                        <a href="{% url 'cottages' %}">Коттеджи</a>
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
                         <a href="{% url 'all_reviews' %}">Отзывы</a>
-                        <a href="#">О нас</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
                     </div>
                 </div>
                 
@@ -638,8 +846,12 @@
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
                         <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
                     </div>
                 </div>
                 
@@ -647,14 +859,14 @@
                     <h3 class="footer-title">Мы на карте</h3>
                     <div class="map-container">
                         <iframe 
-                            src="https://yandex.ru/map-widget/v1/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                             width="100%" 
                             height="250"
                             frameborder="0" 
                             allowfullscreen="true"
-                            style="border: 1px solid #ddd; border-radius: 4px;">
+                            style="border: 1px solid #ddd; border-radius: 8px;">
                         </iframe>
-                        <a href="https://yandex.ru/maps/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                         target="_blank" 
                         class="btn btn-sm btn-outline-secondary mt-2 d-block">
                             Открыть в Яндекс.Картах
@@ -664,7 +876,7 @@
             </div>
             
             <div class="copyright">
-                <p class="mb-0">© 2025 База отдыха FurTree. Все права защищены.</p>
+                <p class="mb-0">© 2026 База отдыха Ёлки. Все права защищены.</p>
                 <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
             </div>
         </div>
@@ -682,12 +894,47 @@
         });
         
         // Add selection to chosen option
-        document.querySelector(`.payment-option:nth-child(${option === 'full' ? 1 : 2})`).classList.add('selected');
+        const optionIndex = {'full': 1, 'prepayment': 2, 'tbank': 3, 'qr': 4}[option];
+        document.querySelector(`.payment-option:nth-child(${optionIndex})`).classList.add('selected');
         
         // Set radio button
         document.getElementById(`payment_${option}`).checked = true;
     }
-    
+
+    // Обработка формы оплаты
+    $(document).ready(function() {
+        // Initialize default selection
+        selectPaymentOption('full');
+        
+        // Обработка отправки формы
+        $('#payment-form').on('submit', function(e) {
+            if (!document.getElementById('agree_with_terms').checked) {
+                e.preventDefault();
+                alert('Пожалуйста, согласитесь с условиями бронирования');
+                return false;
+            }
+            
+            const selectedMethod = $('input[name="payment_method"]:checked').val();
+            
+            if (selectedMethod === 'tbank') {
+                e.preventDefault();
+                $('#tbankModal').modal('show');
+                return false;
+            }
+            
+            if (selectedMethod === 'qr') {
+                e.preventDefault();
+                $('#qrModal').modal('show');
+                return false;
+            }
+        });
+        
+        // Кнопка подтверждения Т-Банк перевода
+        $('#confirmTbankPayment').on('click', function() {
+            $('#payment-form').off('submit').submit();
+        });
+    });
+
     // Фиксированная шапка при прокрутке
         $(window).scroll(function() {
             if ($(this).scrollTop() > 100) {

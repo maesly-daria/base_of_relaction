@@ -1,0 +1,56 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<div id="content-main">
+    <form method="post" id="{{ opts.model_name }}_form" novalidate>
+        {% csrf_token %}
+        
+        <!-- Только для чтения информация -->
+        <div class="module aligned">
+            <h2>Информация о бронировании (только чтение)</h2>
+            <div class="form-row">
+                <div><label>Номер бронирования:</label> {{ readonly_fields.booking_id }}</div>
+                <div><label>Клиент:</label> {{ readonly_fields.client }}</div>
+                <div><label>Коттедж:</label> {{ readonly_fields.house }}</div>
+            </div>
+            <div class="form-row">
+                <div><label>Дата заезда:</label> {{ readonly_fields.check_in_date }}</div>
+                <div><label>Дата выезда:</label> {{ readonly_fields.check_out_date }}</div>
+                <div><label>Ночей:</label> {{ readonly_fields.nights }}</div>
+            </div>
+            <div class="form-row">
+                <div><label>Гостей:</label> {{ readonly_fields.guests }}</div>
+                <div><label>Телефон:</label> {{ readonly_fields.phone_number }}</div>
+                <div><label>Email:</label> {{ readonly_fields.email }}</div>
+            </div>
+            <div class="form-row">
+                <div><label>ФИО клиента:</label> {{ readonly_fields.client_name }}</div>
+                <div><label>Дата создания:</label> {{ readonly_fields.created_at }}</div>
+            </div>
+        </div>
+
+        <!-- Редактируемые поля -->
+        <div class="module aligned">
+            <h2>Редактируемые поля</h2>
+            {% for field in form %}
+                <div class="form-row field-{{ field.name }}">
+                    {{ field.errors }}
+                    <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <div class="help">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {% block submit_buttons_bottom %}
+        <div class="submit-row">
+            <input type="submit" value="Сохранить" class="default" name="_save">
+            <input type="submit" value="Сохранить и продолжить редактирование" name="_continue">
+        </div>
+        {% endblock %}
+    </form>
+</div>
+{% endblock %}

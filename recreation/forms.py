@@ -4,118 +4,121 @@ from django.conf import settings
 import django_filters
 from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
-from .models import Booking, Client, CustomUser, House, Post, Review, Service
-
+from .models import Booking, Client, CustomUser, House, Post, Review, Service, PackageOption
+from base_relaction.settings import MIN_LEGTH_PASSWORD_CONSTANT  
+def my_view(request):  
+    value = MIN_LEGTH_PASSWORD_CONSTANT 
 User = get_user_model()
 
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, label="Email")
-    phone = forms.CharField(required=True, label="Номер телефона")
+    phone = forms.CharField(
+        max_length=20, 
+        required=True, 
+        label="Номер телефона",
+        widget=forms.TextInput(attrs={
+            "placeholder": "+79999999999",
+            "class": "form-control phone-input"
+        })
+    )
     last_name = forms.CharField(required=True, label="Фамилия")
-    username = forms.CharField(required=True, label="Имя")
+    first_name = forms.CharField(required=True, label="Имя")
     patronymic = forms.CharField(required=False, label="Отчество")
 
     class Meta:
         model = CustomUser
         fields = (
-            "username",
+            "first_name",
+            "last_name",
+            "patronymic", 
             "email",
             "phone",
-            "last_name",
-            "patronymic",
             "password1",
             "password2",
         )
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        # Сохраняем все данные в модель пользователя
-        user.username = self.cleaned_data["username"]
-        user.email = self.cleaned_data["email"]
-        user.phone = self.cleaned_data["phone"]
-        user.last_name = self.cleaned_data["last_name"]
-        user.patronymic = self.cleaned_data.get("patronymic", "")
-
-        if commit:
-            user.save()
-            # Создаем профиль клиента
-            Client.objects.create(
-                user=user,
-                last_name=user.last_name,
-                first_name=user.username,  # Используем username как имя
-                patronymic=user.patronymic,
-                phone_number=user.phone,
-                email=user.email,
-            )
-        return user
+    def clean_phone(self):
+        phone = self.cleaned_data['phone']
+        if not phone:
+            raise forms.ValidationError("Это поле обязательно.")
+        
+        cleaned_phone = re.sub(r'\D', '', phone)
+        
+        if len(cleaned_phone) != 11:
+            raise forms.ValidationError("Номер телефона должен содержать 11 цифр")
+        
+        if not cleaned_phone.startswith(('7', '8')):
+            raise forms.ValidationError("Номер должен начинаться с 7 или 8")
+        
+        return '+7' + cleaned_phone[1:]
 
 
 class CustomUserChangeForm(forms.ModelForm):
     phone = forms.CharField(
-        max_length=12,
+        max_length=20,
         required=True,
         label="Телефон",
-        widget=forms.TextInput(
-            attrs={"placeholder": "+7 (___) ___-__-__", "class": "phone-input"}
-        ),
-        help_text="Формат: +7 (XXX) XXX-XX-XX",
-    )
-    last_name = forms.CharField(
-        max_length=100,
-        required=True,
-        label="Фамилия",
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-    )
-    username = forms.CharField(
-        max_length=100,
-        required=True,
-        label="Имя",  # Убедитесь, что здесь label="Имя"
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-    )
-    patronymic = forms.CharField(
-        max_length=100,
-        required=False,
-        label="Отчество",
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-    )
-    email = forms.EmailField(
-        required=True, widget=forms.EmailInput(attrs={"class": "form-control"})
+        widget=forms.TextInput(attrs={
+            "placeholder": "+79999999999", 
+            "class": "phone-input"
+        }),
+        help_text="Формат: +79999999999",
     )
 
     class Meta:
         model = CustomUser
-        fields = ("username", "last_name", "patronymic", "email", "phone")
-        widgets = {
-            "username": forms.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.TextInput(attrs={"class": "form-control"}),
-            "patronymic": forms.TextInput(attrs={"class": "form-control"}),
-            "email": forms.EmailInput(attrs={"class": "form-control"}),
-            "phone": forms.TextInput(attrs={"class": "form-control"}),
-        }
+        fields = ("first_name", "last_name", "patronymic", "email", "phone")
 
     def clean_phone(self):
         phone = self.cleaned_data["phone"]
-        # Очищаем номер от всех нецифровых символов
-        cleaned_phone = re.sub(r"\D", "", phone)
+        cleaned_phone = re.sub(r'\D', '', phone)
+        
         if len(cleaned_phone) != 11:
             raise forms.ValidationError("Номер должен содержать 11 цифр")
-        if not phone.startswith("+7"):
-            raise ValidationError("Телефон должен начинаться с +7")
-        return f"+7{cleaned_phone[1:]}"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["email"].disabled = True  # Email нельзя менять
+        
+        if not cleaned_phone.startswith(('7', '8')):
+            raise forms.ValidationError("Телефон должен начинаться с 7 или 8")
+        
+        return '+7' + cleaned_phone[1:]
 
 
 class EmailPhoneAuthForm(AuthenticationForm):
     username = forms.CharField(label="Email или телефон")
+    
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            # Пытаемся найти пользователя по email или телефону
+            user = None
+            if '@' in username:
+                # Если введен email
+                try:
+                    user = CustomUser.objects.get(email=username)
+                except CustomUser.DoesNotExist:
+                    pass
+            else:
+                # Если введен телефон
+                try:
+                    user = CustomUser.objects.get(phone=username)
+                except CustomUser.DoesNotExist:
+                    pass
+            
+            if user is None:
+                raise forms.ValidationError("Неверный email/телефон или пароль")
+            
+            self.user_cache = authenticate(self.request, username=user.email, password=password)
+            if self.user_cache is None:
+                raise forms.ValidationError("Неверный email/телефон или пароль")
+            
+        return self.cleaned_data
 
 
 class ClientProfileForm(forms.ModelForm):
@@ -151,15 +154,25 @@ class LoginForm(forms.Form):
 
 
 class PostForm(forms.ModelForm):
-    body = forms.CharField(widget=CKEditorWidget())
+    # body = forms.CharField(widget=CKEditorWidget())
 
     class Meta:
         model = Post
         fields = ["title", "slug", "body", "status", "tags", "image"]
         widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control"}),
+            'body': forms.Textarea(attrs={
+                'rows': 8,
+                'class': 'form-control',
+                'placeholder': 'Введите текст поста...'
+            }),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите заголовок...'
+            }),
             "slug": forms.TextInput(attrs={"class": "form-control"}),
-            "status": forms.Select(attrs={"class": "form-control"}),
+            'status': forms.Select(attrs={
+                'class': 'form-control'
+            }),
             "tags": forms.SelectMultiple(attrs={"class": "form-control"}),
             "image": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
@@ -218,48 +231,30 @@ class ClientForm(forms.ModelForm):
             "first_name": forms.TextInput(attrs={"class": "form-control"}),
             "patronymic": forms.TextInput(attrs={"class": "form-control"}),
             "email": forms.EmailInput(attrs={"class": "form-control"}),
-            "phone_number": forms.TextInput(attrs={"class": "form-control"}),
-        }
-        labels = {
-            "last_name": "Фамилия",
-            "first_name": "Имя",
-            "patronymic": "Отчество",
-            "email": "Email",
-            "phone_number": "Телефон",
-            "document": "Документ",
-        }
-        help_texts = {
-            "email": "Введите действительный адрес электронной почты.",
-        }
-        error_messages = {
-            "email": {
-                "invalid": "Введите правильный адрес электронной почты.",
-            },
+            "phone_number": forms.TextInput(attrs={
+                "class": "form-control phone-input",
+                "placeholder": "+79999999999"
+            }),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["email"].disabled = True  # Запрещаем изменение email
-
-    def clean_email(self):
-        # Проверка, что email не изменялся
-        if self.instance and self.instance.email != self.cleaned_data["email"]:
-            raise forms.ValidationError("Вы не можете изменить email")
-        return self.cleaned_data["email"]
-
-    def clean_document(self):
-        document = self.cleaned_data.get("document")
-        if document:
-            # Проверка размера файла (5MB)
-            if document.size > 5 * 1024 * 1024:
-                raise forms.ValidationError("Файл слишком большой (максимум 5MB)")
-            # Проверка расширения файла
-            valid_extensions = [".pdf", ".jpg", ".jpeg", ".png"]
-            if not any(document.name.lower().endswith(ext) for ext in valid_extensions):
-                raise forms.ValidationError(
-                    "Поддерживаются только PDF, JPG и PNG файлы"
-                )
-        return document
+    def clean_phone_number(self):
+        phone = self.cleaned_data['phone_number']
+        if not phone:
+            raise forms.ValidationError("Это поле обязательно.")
+        
+        # Очищаем от всех символов кроме цифр
+        cleaned_phone = re.sub(r'\D', '', phone)
+        
+        # Проверяем длину
+        if len(cleaned_phone) != 11:
+            raise forms.ValidationError("Номер телефона должен содержать 11 цифр")
+        
+        # Проверяем, что номер начинается с 7 или 8
+        if not cleaned_phone.startswith(('7', '8')):
+            raise forms.ValidationError("Номер должен начинаться с 7 или 8")
+        
+        # Сохраняем в формате +7XXXXXXXXXX
+        return '+7' + cleaned_phone[1:]
 
 
 class HouseForm(forms.ModelForm):
@@ -306,103 +301,99 @@ class BookingForm(forms.ModelForm):
         label="Телефон",
         max_length=20,
         required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "id": "id_phone_number"}),
+        widget=forms.TextInput(attrs={
+            "class": "form-control", 
+            "id": "id_phone_number",
+            "placeholder": "+7 (___) ___-__-__"
+        }),
     )
     
-    check_in_date = forms.DateField(widget=forms.HiddenInput())
-    check_out_date = forms.DateField(widget=forms.HiddenInput())
-    guests = forms.IntegerField(widget=forms.HiddenInput())
-    
+    # Добавляем поле для услуг если нужно
     services = forms.ModelMultipleChoiceField(
         queryset=Service.objects.filter(is_active=True),
         widget=forms.CheckboxSelectMultiple,
         required=False,
+        label="Дополнительные услуги"
     )
 
     class Meta:
         model = Booking
         fields = [
-            "client_name", "email", "phone_number", "services", "comment",
-            "check_in_date", "check_out_date", "guests"
+            'house',
+            'check_in_date', 
+            'check_out_date',
+            'guests',
+            'phone_number',
+            'email',
+            'client_name',
+            'comment',
+            'services'
         ]
+        widgets = {
+            'check_in_date': forms.DateInput(attrs={
+                'type': 'date', 
+                'class': 'form-control',
+                'readonly': 'readonly'
+            }),
+            'check_out_date': forms.DateInput(attrs={
+                'type': 'date', 
+                'class': 'form-control',
+                'readonly': 'readonly'
+            }),
+            'guests': forms.NumberInput(attrs={
+                'class': 'form-control', 
+                'min': 1,
+                'readonly': 'readonly'
+            }),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3,
+                'placeholder': 'Дополнительные пожелания...'
+            }),
+            'house': forms.HiddenInput(),
+        }
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        self.house = kwargs.pop('house', None)
+        self.disable_date_validation = kwargs.pop('disable_date_validation', False)
         super().__init__(*args, **kwargs)
+        # Делаем поле house скрытым
+        self.fields['house'].widget = forms.HiddenInput()
+    
+    def clean_phone_number(self):
+        phone = self.cleaned_data['phone_number']
         
-        print(f"DEBUG: Form initialized with house: {self.house}")
-
-    def _post_clean(self):
-        # ПЕРЕОПРЕДЕЛЯЕМ метод чтобы избежать вызова full_clean() модели
-        # Вместо этого выполняем свою валидацию
-        opts = self._meta
-
-        # Вызываем clean() формы но не модели
-        try:
-            self.instance = Booking()  # Создаем пустой экземпляр
-            self.clean()
-        except ValidationError as e:
-            self._update_errors(e)
-
-        # Пропускаем вызов full_clean() модели
-        # if self._meta.model:
-        #     self.instance.full_clean(
-        #         exclude=self._get_validation_exclusions(),
-        #         validate_unique=False,
-        #     )
+        # Убираем все не-цифры для проверки
+        cleaned_phone = re.sub(r'\D', '', phone)
+        
+        # Проверяем длину (11 цифр)
+        if len(cleaned_phone) != 11:
+            raise forms.ValidationError("Номер телефона должен содержать 11 цифр")
+        
+        # Проверяем, что номер начинается с 7
+        if not cleaned_phone.startswith('7'):
+            raise forms.ValidationError("Номер должен начинаться с 7")
+        
+        # Форматируем номер для сохранения
+        formatted_phone = f"+7 ({cleaned_phone[1:4]}) {cleaned_phone[4:7]}-{cleaned_phone[7:9]}-{cleaned_phone[9:11]}"
+        return formatted_phone
 
     def clean(self):
-        # Простая валидация полей формы
         cleaned_data = super().clean()
+        check_in = cleaned_data.get('check_in_date')
+        check_out = cleaned_data.get('check_out_date')
+        house = cleaned_data.get('house')
         
-        # Проверяем обязательные поля формы
-        required_fields = ['check_in_date', 'check_out_date', 'guests', 'client_name', 'email', 'phone_number']
-        for field in required_fields:
-            if not cleaned_data.get(field):
-                raise ValidationError(f"Поле {field} обязательно для заполнения")
-                
+        # Проверка дат
+        if check_in and check_out and check_out <= check_in:
+            raise forms.ValidationError("Дата выезда должна быть позже даты заезда")
+        
+        # Проверка доступности дома (только если не отключена для пакетов)
+        if not self.disable_date_validation and house and check_in and check_out:
+            if not house.is_available(check_in, check_out):
+                raise forms.ValidationError("Этот коттедж уже забронирован на выбранные даты. Пожалуйста, выберите другие даты.")
+        
         return cleaned_data
-
-    def save(self, commit=True):
-        print(f"DEBUG: Saving booking with house: {self.house}")
-        
-        booking = Booking(
-            house=self.house,
-            user=self.user,
-            client_name=self.cleaned_data['client_name'],
-            email=self.cleaned_data['email'],
-            phone_number=self.cleaned_data['phone_number'],
-            check_in_date=self.cleaned_data['check_in_date'],
-            check_out_date=self.cleaned_data['check_out_date'],
-            guests=self.cleaned_data['guests'],
-            comment=self.cleaned_data.get('comment', '')
-        )
-        
-        # Рассчитываем стоимость
-        nights = (booking.check_out_date - booking.check_in_date).days
-        booking.base_cost = self.house.price_per_night * nights
-        
-        services = self.cleaned_data.get('services', [])
-        service_cost = sum(service.price for service in services)
-        booking.total_cost = booking.base_cost + service_cost
-        
-        # Отладочный вывод
-        print(f"DEBUG: Cost calculation - Nights: {nights}, Base: {booking.base_cost}, Services: {service_cost}, Total: {booking.total_cost}")
-        
-        try:
-            booking.full_clean()
-        except ValidationError as e:
-            print(f"DEBUG: Validation error: {e}")
-            raise
-        
-        if commit:
-            booking.save()
-            if services:
-                booking.services.set(services)
-            
-        return booking
-
+   
 
 class ClientRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -482,3 +473,140 @@ class PaymentMethodForm(forms.Form):
             required=True,
             label=f'Я согласен с условиями бронирования и понимаю, что возврат средств возможен только при отмене бронирования за {refund_days}+ суток до заезда'
         )
+
+class AccountProfileForm(forms.ModelForm):
+    # Добавляем поле телефона из CustomUser
+    phone = forms.CharField(
+        max_length=20,
+        required=True,
+        label="Телефон",
+        widget=forms.TextInput(attrs={
+            "class": "form-control phone-input",
+            "placeholder": "+79999999999"
+        })
+    )
+    
+    class Meta:
+        model = Client
+        fields = [
+            "last_name",
+            "first_name", 
+            "patronymic",
+            "document",
+        ]
+        widgets = {
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "patronymic": forms.TextInput(attrs={"class": "form-control"}),
+            "document": forms.ClearableFileInput(attrs={
+                "class": "custom-file-input",
+                "accept": ".pdf,.jpg,.jpeg,.png,.doc,.docx"
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        # Предзаполняем данными из пользователя
+        if self.user:
+            self.fields['phone'].initial = self.user.phone
+
+    def save(self, commit=True):
+        client = super().save(commit=False)
+        
+        # Обновляем данные пользователя
+        if self.user:
+            self.user.first_name = self.cleaned_data['first_name']
+            self.user.last_name = self.cleaned_data['last_name']
+            self.user.patronymic = self.cleaned_data['patronymic']
+            self.user.phone = self.cleaned_data['phone']
+            self.user.save()
+        
+        if commit:
+            client.save()
+        return client
+    
+
+# Формы для пакетного конструктора (добавить в конец файла)
+class LocalPackageBuilderForm(forms.Form):
+    OCCASION_CHOICES = [
+        ('weekend', 'Выходные'),
+        ('birthday', 'День рождения'),
+        ('anniversary', 'Годовщина'), 
+        ('family', 'Семейный отдых'),
+        ('friends', 'Встреча с друзьями'),
+        ('romantic', 'Романтический вечер'),
+        ('none', 'Просто отдохнуть'),
+    ]
+    
+    occasion = forms.ChoiceField(
+        choices=OCCASION_CHOICES,
+        label="Повод для отдыха",
+        widget=forms.RadioSelect
+    )
+    guests = forms.IntegerField(
+        min_value=1,
+        max_value=20,
+        label="Количество гостей",
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    nights = forms.ChoiceField(
+        choices=[(1, '1 ночь'), (2, '2 ночи'), (3, '3 ночи'), (4, '4+ ночей')],
+        label="Количество ночей",
+        widget=forms.RadioSelect
+    )
+
+
+class PackageCustomizationForm(forms.Form):
+    selected_options = forms.ModelMultipleChoiceField(
+        queryset=PackageOption.objects.none(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label="Дополнительные опции"
+    )
+    custom_requests = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'placeholder': 'Особые пожелания, аллергии, предпочтения...',
+            'class': 'form-control'
+        }),
+        required=False,
+        label="Особые пожелания"
+    )
+    
+    def __init__(self, *args, **kwargs):
+        package = kwargs.pop('package', None)
+        super().__init__(*args, **kwargs)
+        if package:
+            self.fields['selected_options'].queryset = PackageOption.objects.filter(
+                package=package, 
+                is_active=True
+            )
+
+
+class QuickBookingForm(forms.Form):
+    """Форма для быстрого бронирования местными"""
+    house = forms.ModelChoiceField(
+        queryset=House.objects.filter(is_active=True),
+        label="Коттедж",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    check_in = forms.DateField(
+        label="Дата заезда",
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+    )
+    nights = forms.IntegerField(
+        min_value=1,
+        max_value=7,
+        initial=2,
+        label="Количество ночей",
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    guests = forms.IntegerField(
+        min_value=1,
+        max_value=10,
+        initial=2,
+        label="Гости",
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )

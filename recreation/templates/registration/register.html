@@ -37,6 +37,32 @@
         }
 
         /* Header */
+        .global-stats {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ffc107; /* Золотой цвет звёзд */
+            display: inline-block;
+        }
+
+        .star-rating .fas.fa-star,
+        .star-rating .fas.fa-star-half-alt {
+            color: #ffc107;
+        }
+
+        .star-rating .far.fa-star {
+            color: #ddd; /* Цвет пустых звёзд */
+        }
+
+        .review-count {
+            font-size: 16px;
+            color: #666;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
         .navbar {
             background-color: var(--secondary-color) !important;
             padding: 15px 0;
@@ -59,6 +85,14 @@
         .navbar-nav .nav-link:hover {
             color: var(--dark-brown) !important;
             transform: translateY(-2px);
+        }
+
+        .navbar-toggler {
+            border-color: var(--primary-color);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(134, 68, 33, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
         }
 
         .register-section {
@@ -107,8 +141,9 @@
             box-shadow: 0 0 0 0.2rem rgba(134, 68, 33, 0.25);
         }
 
-        .btn-register {
+        .btn-primary {
             background-color: var(--primary-color);
+            border-color: var(--primary-color);
             border: none;
             padding: 0.75rem;
             font-size: 1.1rem;
@@ -118,8 +153,9 @@
             transition: var(--transition);
         }
 
-        .btn-register:hover {
-            background-color: var(--accent-color);
+        .btn-primary:hover {
+            background-color: #6d361a;
+            border-color: #6d361a;
             transform: translateY(-2px);
         }
 
@@ -199,6 +235,7 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .footer-links a {
@@ -247,27 +284,47 @@
 </head>
 <body>
     <!-- Header -->
-     <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="global-stats">
+                <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
+                    {% for i in "12345" %}
+                        {% if global_avg_rating >= forloop.counter %}
+                            <i class="fas fa-star active"></i>
+                        {% elif global_avg_rating|add:-0.5 >= forloop.counter|add:-1 %}
+                            <i class="fas fa-star-half-alt active"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="review-count">({{ global_total_reviews }})</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cottages' %}">Коттеджи</a>
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'post_list' %}">Блог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
                     </li>
                 </ul>
             </div>
@@ -284,7 +341,11 @@
                 <div class="register-body">
                     {% if form.errors %}
                     <div class="alert alert-danger alert-dismissible fade show">
-                        Пожалуйста, исправьте ошибки в форме
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
                         <button type="button" class="close" data-dismiss="alert">
                             <span>&times;</span>
                         </button>
@@ -297,44 +358,71 @@
                         <div class="form-row">
                             <div class="form-group col-md-4">
                                 <label for="id_last_name">Фамилия*</label>
-                                <input type="text" name="last_name" class="form-control" required id="id_last_name">
+                                <input type="text" name="last_name" class="form-control" required id="id_last_name"
+                                    value="{{ form.last_name.value|default:'' }}">
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             <div class="form-group col-md-4">
-                                <label for="id_username">Имя*</label>
-                                <input type="text" name="username" class="form-control" required id="id_username">
+                                <label for="id_first_name">Имя*</label>
+                                <input type="text" name="first_name" class="form-control" required id="id_first_name"
+                                    value="{{ form.first_name.value|default:'' }}">
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="id_patronymic">Отчество</label>
-                                <input type="text" name="patronymic" class="form-control" id="id_patronymic">
+                                <input type="text" name="patronymic" class="form-control" id="id_patronymic"
+                                    value="{{ form.patronymic.value|default:'' }}">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="id_phone">Телефон*</label>
-                            <input type="tel" name="phone" class="form-control" required id="id_phone" placeholder="+7 XXX XXX-XX-XX">
+                            <input type="tel" name="phone" class="form-control phone-input" required id="id_phone" 
+                                placeholder="+79999999999"
+                                value="{{ form.phone.value|default:'' }}">
+                            {% if form.phone.errors %}
+                                <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                            {% endif %}
+                            <!--small class="form-text text-muted">Формат: +7xxxxxxxxxx</small!-->
                         </div>
 
                         <div class="form-group">
                             <label for="id_email">Email*</label>
-                            <input type="email" name="email" class="form-control" required id="id_email">
+                            <input type="email" name="email" class="form-control" required id="id_email"
+                                value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                            {% endif %}
                         </div>
-
-                        {% comment %} <div class="form-group">
-                            <label for="id_username">Логин*</label>
-                            <input type="text" name="username" class="form-control" required id="id_username">
-                        </div> {% endcomment %}
 
                         <div class="form-group">
                             <label for="id_password1">Пароль*</label>
                             <input type="password" name="password1" class="form-control" required id="id_password1">
+                            {% if form.password1.errors %}
+                                <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+                            {% endif %}
+                            {{ MIN_LEGTH_PASSWORD_CONSTANT }}
+                            <small class="form-text text-muted">
+                                {% with min_length=8 %}
+                                Пароль должен содержать как минимум <strong>{{ min_length }}</strong> символов, включать буквы и цифры.
+                                {% endwith %}
+                            </small>
                         </div>
 
                         <div class="form-group">
                             <label for="id_password2">Подтверждение пароля*</label>
                             <input type="password" name="password2" class="form-control" required id="id_password2">
+                            {% if form.password2.errors %}
+                                <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+                            {% endif %}
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-user-plus mr-2"></i>Зарегистрироваться</button>
                     </form>
                     <div class="register-footer">
                         <p class="mb-0">Уже есть аккаунт? <a href="{% url 'login' %}">Войдите</a></p>
@@ -344,49 +432,72 @@
         </div>
     </section>
 
-     <!-- Footer как в home.html -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
-                    <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
-                    <p>Уютное пространство для отдыха на природе в Свердловской области.</p>
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
+                    <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="/">Главная</a>
-                        <a href="/cottages/">Коттеджи</a>
-                        <a href="/booking/">Бронирование</a>
-                        <a href="/reviews/">Отзывы</a>
-                        <a href="/about/">О нас</a>
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
+                        <a href="{% url 'all_reviews' %}">Отзывы</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
                     </div>
                 </div>
                 
                 <div class="col-lg-3 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
-                        <p><i class="fas fa-map-marker-alt mr-2"></i> Свердловская область, д. Савина</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
+                        <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
                     </div>
                 </div>
                 
                 <div class="col-lg-3 col-md-6">
-                    <h3 class="footer-title">Карта</h3>
-                    <img src="{% static 'images/karta.png' %}" alt="Карта" class="img-fluid rounded border border-white">
+                    <h3 class="footer-title">Мы на карте</h3>
+                    <div class="map-container">
+                        <iframe 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
+                            width="100%" 
+                            height="250"
+                            frameborder="0" 
+                            allowfullscreen="true"
+                            style="border: 1px solid #ddd; border-radius: 8px;">
+                        </iframe>
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
+                        target="_blank" 
+                        class="btn btn-sm btn-outline-secondary mt-2 d-block">
+                            Открыть в Яндекс.Картах
+                        </a>
+                    </div>
                 </div>
             </div>
             
             <div class="copyright">
-                <p class="mb-0">© 2023 База отдыха FurTree. Все права защищены.</p>
+                <p class="mb-0">© 2026 База отдыха Ёлки. Все права защищены.</p>
                 <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
             </div>
         </div>
@@ -396,19 +507,65 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        // Toggle password visibility
-        document.querySelectorAll('.toggle-password').forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const input = this.parentElement.querySelector('input');
-                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-                input.setAttribute('type', type);
-                this.classList.toggle('fa-eye-slash');
+        $(document).ready(function() {
+            // Улучшенная маска для телефона
+            function formatPhone(input) {
+                let value = input.value.replace(/\D/g, '');
+                
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                
+                if (value.startsWith('8')) {
+                    value = '7' + value.substring(1);
+                }
+                
+                let formatted = '';
+                if (value.length > 0) {
+                    formatted = '+7';
+                    if (value.length > 1) {
+                        formatted += ' (' + value.substring(1, 4);
+                    }
+                    if (value.length >= 4) {
+                        formatted += ') ' + value.substring(4, 7);
+                    }
+                    if (value.length >= 7) {
+                        formatted += '-' + value.substring(7, 9);
+                    }
+                    if (value.length >= 9) {
+                        formatted += '-' + value.substring(9, 11);
+                    }
+                }
+                
+                input.value = formatted;
+            }
+
+            // Обработчик для поля телефона
+            $('#id_phone').on('input', function(e) {
+                formatPhone(this);
             });
-        });
-        
-        // Add animation to form elements
-        document.querySelectorAll('.form-control').forEach((input, index) => {
-            input.style.transitionDelay = `${index * 50}ms`;
+
+            // При загрузке форматируем существующие номера
+            $('.phone-input').each(function() {
+                if (this.value) {
+                    formatPhone(this);
+                }
+            });
+
+            // Toggle password visibility
+            document.querySelectorAll('.toggle-password').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const input = this.parentElement.querySelector('input');
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    this.classList.toggle('fa-eye-slash');
+                });
+            });
+            
+            // Add animation to form elements
+            document.querySelectorAll('.form-control').forEach((input, index) => {
+                input.style.transitionDelay = `${index * 50}ms`;
+            });
         });
     </script>
 </body>

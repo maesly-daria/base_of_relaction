@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<div id="content-main">
+    <h1>Редактирование постов временно отключено</h1>
+    <p>Используйте список для быстрого редактирования полей "title" и "status".</p>
+    
+    {% block result_list %}
+        {% if cl %}
+            <div class="results">
+                {{ cl.result_list|length }} постов
+            </div>
+            {% include "admin/change_list_results.html" %}
+        {% endif %}
+    {% endblock %}
+</div>
+{% endblock %}

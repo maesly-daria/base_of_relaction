@@ -31,6 +31,32 @@
         }
 
         /* Header */
+        .global-stats {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ffc107; /* Золотой цвет звёзд */
+            display: inline-block;
+        }
+
+        .star-rating .fas.fa-star,
+        .star-rating .fas.fa-star-half-alt {
+            color: #ffc107;
+        }
+
+        .star-rating .far.fa-star {
+            color: #ddd; /* Цвет пустых звёзд */
+        }
+
+        .review-count {
+            font-size: 16px;
+            color: #666;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
         .navbar {
             background-color: var(--secondary-color) !important;
             padding: 15px 0;
@@ -53,6 +79,14 @@
         .navbar-nav .nav-link:hover {
             color: var(--dark-brown) !important;
             transform: translateY(-2px);
+        }
+
+        .navbar-toggler {
+            border-color: var(--primary-color);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(134, 68, 33, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
         }
 
         /* Основной контент */
@@ -175,6 +209,54 @@
             margin-top: 30px;
         }
 
+        /* Стили для пакетов */
+        .package-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #dee2e6;
+        }
+
+        .package-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .selected-package {
+            border: 2px solid #28a745 !important;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.2);
+            transform: scale(1.02);
+        }
+
+        .package-features {
+            border-left: 3px solid #28a745;
+            padding-left: 10px;
+            margin: 10px 0;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-success {
+            color: #28a745;
+            border-color: #28a745;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            border-color: #28a745;
+            transform: translateY(-1px);
+        }
+
         /* Footer */
         .footer {
             background-color: #fff;
@@ -192,6 +274,7 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .footer-links a {
@@ -285,21 +368,35 @@
 </head>
 <body>
    <!-- Header -->
-     <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="global-stats">
+                <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
+                    {% for i in "12345" %}
+                        {% if global_avg_rating >= forloop.counter %}
+                            <i class="fas fa-star active"></i>
+                        {% elif global_avg_rating|add:-0.5 >= forloop.counter|add:-1 %}
+                            <i class="fas fa-star-half-alt active"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="review-count">({{ global_total_reviews }})</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cottages' %}">Коттеджи</a>
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
@@ -309,6 +406,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
                     </li>
                 </ul>
             </div>
@@ -407,15 +507,17 @@
                         <input type="hidden" name="check_out_date" value="{{ check_out|date:'Y-m-d' }}">
                         <input type="hidden" name="guests" value="{{ guests }}">
                         
+                        <!-- СКРЫТОЕ ПОЛЕ ДЛЯ ПАКЕТА - ДОЛЖНО БЫТЬ В ФОРМЕ -->
+                        <input type="hidden" name="selected_package" id="selected_package" value="">
                         <!-- Добавьте этот блок после заголовка формы для отладки -->
-                        <div class="debug-info alert alert-info">
+                        <!--div class="debug-info alert alert-info">
                             <strong>Отладочная информация:</strong><br>
                             Коттедж: {{ house.name }} (ID: {{ house.house_id }})<br>
                             Дата заезда: {{ check_in|date:"d.m.Y" }}<br>
                             Дата выезда: {{ check_out|date:"d.m.Y" }}<br>
                             Гостей: {{ guests }}<br>
                             Ночей: {{ nights }}
-                        </div>
+                        </div!-->
 
                         <!-- Остальная часть формы -->
                         {% for field in form %}
@@ -438,25 +540,118 @@
                         {% endfor %}
                         
                         <!-- Блок услуг -->
-                        <h4 class="mt-4 mb-3">Дополнительные услуги</h4>
-                        <div class="row">
-                            {% for service in services %}
-                            <div class="col-md-6 mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" 
-                                        name="services" 
-                                        id="service-{{ service.service_id }}" 
-                                        value="{{ service.service_id }}">
-                                    <label class="form-check-label d-flex justify-content-between" 
-                                        for="service-{{ service.service_id }}">
-                                        <span>{{ service.name }}</span>
-                                        <span class="text-primary">{{ service.price }} ₽</span>
-                                    </label>
-                                    <p class="text-muted small mt-1">{{ service.description }}</p>
+                        <div class="services-section mt-4">
+                            <h4 class="mb-3">
+                                <i class="fas fa-concierge-bell mr-2"></i>Дополнительные услуги
+                            </h4>
+                            
+                            <!-- Важное уведомление -->
+                            <div class="alert alert-info mb-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-info-circle fa-lg mr-3 mt-1"></i>
+                                    <div>
+                                        <strong>Важная информация:</strong>
+                                        <ul class="mb-0 mt-2">
+                                            <li>При выборе услуг укажите в комментариях ниже, на какой день и время бронируется каждая услуга</li>
+                                            <li>Услуги оформляются при бронировании домика</li>
+                                            <li>Для некоторых услуг может потребоваться предварительное бронирование</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            {% endfor %}
+                            
+                            <div class="row">
+                                {% for service in services %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="service-card card h-100 border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input service-checkbox" 
+                                                    type="checkbox" 
+                                                    name="services" 
+                                                    id="service-{{ service.service_id }}" 
+                                                    value="{{ service.service_id }}"
+                                                    data-service-name="{{ service.name }}"
+                                                    data-service-price="{{ service.price }}">
+                                                <label class="form-check-label d-flex justify-content-between w-100" 
+                                                    for="service-{{ service.service_id }}">
+                                                    <span class="font-weight-bold">{{ service.name }}</span>
+                                                    <span class="badge badge-primary badge-pill">{{ service.price }} ₽</span>
+                                                </label>
+                                            </div>
+                                            <p class="text-muted small mb-3">{{ service.description }}</p>
+                                            
+                                            <!-- Поле для указания даты/времени услуги -->
+                                            <div class="service-time-input" style="display: none;">
+                                                <label class="small font-weight-bold mb-1">Для этой услуги укажите:</label>
+                                                <textarea class="form-control form-control-sm service-time-comment" 
+                                                        placeholder="Например: 15 августа с 18:00 до 20:00"
+                                                        name="service_time_{{ service.service_id }}"
+                                                        rows="2"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Общее поле для комментариев к услугам -->
+                            <div class="form-group mt-4">
+                                <label for="service_comment" class="font-weight-bold">
+                                    <i class="fas fa-comment-alt mr-2"></i>Комментарий к услугам:
+                                </label>
+                                <textarea class="form-control" id="service_comment" name="service_comment" 
+                                        rows="4" 
+                                        placeholder="Укажите здесь даты и время для всех выбранных услуг...&#10;Например:&#10;- Банный чан: 15 августа с 18:00 до 20:00&#10;- Завтрак: ежедневно с 8:00 до 10:00&#10;- Экскурсия: 16 августа в 11:00"></textarea>
+                                <small class="form-text text-muted">
+                                    Это поле обязательно для заполнения, если выбраны дополнительные услуги
+                                </small>
+                            </div>
                         </div>
+
+                        <!-- Умное предложение пакетов -->
+                        {% if available_packages %}
+                        <div class="smart-recommendation mb-4">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">🎁 Специальные пакеты</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        {% for package in available_packages %}
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card h-100 border package-card" data-package-id="{{ package.package_id }}">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">{{ package.name }}</h6>
+                                                    <p class="card-text small">{{ package.description }}</p>
+                                                    
+                                                    <div class="mb-2">
+                                                        {% for option in package.options.all|slice:":3" %}
+                                                        <small class="d-block">✓ {{ option.name }}</small>
+                                                        {% endfor %}
+                                                    </div>
+                                                    
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <span class="h6 text-primary mb-0">{{ package.final_price|floatformat:0 }} руб.</span>
+                                                        </div>
+                                                        <button type="button" class="btn btn-outline-success btn-sm package-select-btn" 
+                                                                onclick="selectPackage({{ package.package_id }})">
+                                                            Выбрать пакет
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                                    <!-- Скрытое поле для выбранного пакета -->
+                                    <input type="hidden" name="selected_package" id="selected_package" value="">
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
                         
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-primary btn-lg py-3 px-5">
@@ -474,32 +669,42 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
-                    <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
-                    <p>Уютное пространство для отдыха на природе в Свердловской области.</p>
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
+                    <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="/">Главная</a>
-                        <a href="/cottages/">Коттеджи</a>
-                        <a href="/booking/">Бронирование</a>
-                        <a href="/reviews/">Отзывы</a>
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
+                        <a href="{% url 'all_reviews' %}">Отзывы</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
                     </div>
                 </div>
                 
                 <div class="col-lg-3 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
-                        <p><i class="fas fa-map-marker-alt mr-2"></i> Свердловская область, д. Савина</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
+                        <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
                     </div>
                 </div>
                 
@@ -507,14 +712,14 @@
                     <h3 class="footer-title">Мы на карте</h3>
                     <div class="map-container">
                         <iframe 
-                            src="https://yandex.ru/map-widget/v1/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                             width="100%" 
                             height="250"
                             frameborder="0" 
                             allowfullscreen="true"
-                            style="border: 1px solid #ddd; border-radius: 4px;">
+                            style="border: 1px solid #ddd; border-radius: 8px;">
                         </iframe>
-                        <a href="https://yandex.ru/maps/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                         target="_blank" 
                         class="btn btn-sm btn-outline-secondary mt-2 d-block">
                             Открыть в Яндекс.Картах
@@ -524,7 +729,7 @@
             </div>
             
             <div class="copyright">
-                <p class="mb-0">© 2025 База отдыха FurTree. Все права защищены.</p>
+                <p class="mb-0">© 2026 База отдыха Ёлки. Все права защищены.</p>
                 <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
             </div>
         </div>
@@ -534,28 +739,111 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script>
     $(document).ready(function() {
-        // Маска для телефона
-        $('#id_phone_number').mask('+7(000)000-00-00', {
-            placeholder: '+7(___)___-__-__'
-        });
-        
-        // Автоматическое добавление +7 при фокусе, если поле пустое
-        $('#id_phone_number').on('focus', function() {
-            if (!$(this).val()) {
-                $(this).val('+7');
+        // Показ/скрытие полей для времени услуг
+        $('.service-checkbox').change(function() {
+            const serviceCard = $(this).closest('.service-card');
+            const timeInput = serviceCard.find('.service-time-input');
+            
+            if ($(this).is(':checked')) {
+                timeInput.slideDown(300);
+            } else {
+                timeInput.slideUp(300);
+                serviceCard.find('.service-time-comment').val(''); // Очищаем поле
             }
+            
+            updateServiceComments();
         });
         
-        // Валидация телефона перед отправкой формы
-        $('#booking-form').on('submit', function() {
-            var phone = $('#id_phone_number').val().replace(/\D/g, '');
-            if (phone.length !== 11) {
-                alert('Пожалуйста, введите корректный номер телефона');
-                $('#id_phone_number').focus();
+        // Автоматическое обновление общего комментария
+        function updateServiceComments() {
+            let comments = [];
+            
+            $('.service-checkbox:checked').each(function() {
+                const serviceName = $(this).data('service-name');
+                const timeComment = $(this).closest('.service-card').find('.service-time-comment').val();
+                
+                if (timeComment.trim()) {
+                    comments.push(`- ${serviceName}: ${timeComment}`);
+                } else {
+                    comments.push(`- ${serviceName}: (укажите время)`);
+                }
+            });
+            
+            $('#service_comment').val(comments.join('\n'));
+        }
+        
+        // Обновление при изменении времени
+        $('.service-time-comment').on('input', function() {
+            updateServiceComments();
+        });
+        
+        // Валидация при отправке формы
+        $('form').on('submit', function(e) {
+            const checkedServices = $('.service-checkbox:checked');
+            const serviceComment = $('#service_comment').val().trim();
+            
+            if (checkedServices.length > 0 && !serviceComment) {
+                e.preventDefault();
+                alert('Пожалуйста, укажите в комментарии даты и время для выбранных услуг');
+                $('#service_comment').focus();
                 return false;
             }
-            return true;
+            
+            // Проверяем, что для каждой услуги указано время
+            let missingTimes = [];
+            checkedServices.each(function() {
+                const serviceName = $(this).data('service-name');
+                const timeComment = $(this).closest('.service-card').find('.service-time-comment').val().trim();
+                
+                if (!timeComment) {
+                    missingTimes.push(serviceName);
+                }
+            });
+            
+            if (missingTimes.length > 0) {
+                e.preventDefault();
+                alert('Пожалуйста, укажите время для следующих услуг:\n' + missingTimes.join('\n'));
+                return false;
+            }
         });
+    });
+    
+    // Автоматическое добавление +7 при фокусе, если поле пустое
+    $('#id_phone_number').on('focus', function() {
+        if (!$(this).val()) {
+            $(this).val('+7 ');
+        }
+    });
+    
+    // Валидация телефона перед отправкой формы
+    $('#booking-form').on('submit', function() {
+        var phone = $('#id_phone_number').val().replace(/\D/g, '');
+        if (phone.length !== 11) {
+            alert('Пожалуйста, введите корректный номер телефона (11 цифр)');
+            $('#id_phone_number').focus();
+            return false;
+        }
+        
+        // Проверяем, что номер начинается с 7
+        if (!phone.startsWith('7')) {
+            alert('Номер телефона должен начинаться с +7');
+            $('#id_phone_number').focus();
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Обработка Backspace - чтобы можно было удалять символы
+    $('#id_phone_number').on('keydown', function(e) {
+        if (e.keyCode === 8) { // Backspace
+            let phone = $(this).val();
+            // Если остался только "+7", очищаем поле полностью
+            if (phone === '+7' || phone === '+7 ') {
+                $(this).val('');
+                e.preventDefault();
+            }
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -670,7 +958,92 @@
             });
         }
     });
-});
+
+    // Функция выбора пакета
+    function selectPackage(packageId) {
+        console.log('Выбираем пакет ID:', packageId);
+        
+        // Устанавливаем значение в скрытое поле
+        const hiddenField = document.getElementById('selected_package');
+        hiddenField.value = packageId;
+        console.log('Скрытое поле установлено:', hiddenField.value);
+        
+        // Визуальное выделение
+        document.querySelectorAll('.package-card').forEach(card => {
+            card.classList.remove('selected-package');
+            const btn = card.querySelector('.package-select-btn');
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-success');
+            btn.textContent = 'Выбрать пакет';
+        });
+        
+        // Выделяем выбранный пакет
+        const selectedCard = document.querySelector(`[data-package-id="${packageId}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('selected-package');
+            const btn = selectedCard.querySelector('.package-select-btn');
+            btn.classList.remove('btn-outline-success');
+            btn.classList.add('btn-success');
+            btn.textContent = '✓ Выбрано';
+            
+            console.log('Пакет выделен:', selectedCard.querySelector('.card-title').textContent);
+        }
+        
+        // Показываем подтверждение
+        alert(`Пакет выбран! При бронировании будут добавлены все услуги пакета.`);
+    }
+
+    // Проверка формы перед отправкой
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
+        const selectedPackage = document.getElementById('selected_package').value;
+        console.log('Отправка формы. Выбранный пакет:', selectedPackage);
+        
+        if (selectedPackage) {
+            if (!confirm('Вы выбрали пакет. Все услуги пакета будут автоматически добавлены к бронированию. Продолжить?')) {
+                e.preventDefault();
+                return false;
+            }
+        }
+    });
+
+    // CSS для выделения выбранного пакета
+    const style = document.createElement('style');
+    style.textContent = `
+        .selected-package {
+            border: 2px solid #28a745 !important;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.2);
+        }
+        .package-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .package-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем стили для карточек пакетов
+        const style = document.createElement('style');
+        style.textContent = `
+            .package-card {
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .package-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            }
+            .package-features {
+                border-left: 3px solid #28a745;
+                padding-left: 10px;
+            }
+        `;
+        document.head.appendChild(style);
+    });
 </script>
 </body>
 </html>

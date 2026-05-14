@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-
+from .views import yookassa_webhook
 from . import views
 from .admin import PostAdmin
 from .api import BookingViewSet, HouseHistoryViewSet, HouseViewSet, ReviewViewSet
@@ -15,6 +15,7 @@ from .views import (
     create_review,
     delete_review,
     register_view,
+    yookassa_webhook
 )
 
 router = DefaultRouter()
@@ -27,7 +28,8 @@ urlpatterns = (
         path("", views.home, name="home"),
         # path('login/', views.login_view, name='login'),
         path("posts/", views.post_list, name="post_list"),
-        path("posts/<slug:slug>/", views.post_detail, name="post_detail"),
+        # path("posts/<int:pk>/", views.post_detail, name="post_detail"),
+        # path("posts/<slug:slug>/", views.post_detail, name="post_detail"),
         path("posts/<int:id>/", views.post_detail, name="post_detail"),
         path("posts/<int:pk>/edit/", views.post_update, name="post_update"),
         path("posts/<int:pk>/delete/", views.post_delete, name="post_delete"),
@@ -65,8 +67,12 @@ urlpatterns = (
             "api/houses/<int:house_id>/history/",
             HouseHistoryViewSet.as_view({"get": "list"}),
         ),
+        path('booking/cancel/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),
+        path('api/yookassa-webhook/', yookassa_webhook, name='yookassa_webhook'),
         path('payment/success/<int:payment_id>/', views.payment_success, name='payment_success'),
         path('payment/webhook/yookassa/', views.yookassa_webhook, name='yookassa_webhook'),
+        path('change-password/', views.change_password, name='change_password'),
+        path('quick-booking/', views.quick_booking, name='quick_booking'),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
@@ -74,11 +80,9 @@ urlpatterns = (
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 admin_instance = PostAdmin(Post, admin.site)
 urlpatterns += [
     path("admin/print_post/<int:id>/", admin_instance.print_post, name="print_post"),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

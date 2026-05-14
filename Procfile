@@ -1,0 +1,1 @@
+web: gunicorn base_relaction.wsgi:application

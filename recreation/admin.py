@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import DateFieldListFilter
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.urls import path
@@ -19,8 +20,9 @@ from .models import (
     Client,
     CustomUser,
     Employee,
-    Event,
+    # Event,
     Facility,
+    HouseImage,
     House,
     Payment,
     Position,
@@ -29,6 +31,10 @@ from .models import (
     Review,
     Service,
     Tag,
+    PackageService,
+    PackageOption,
+    TravelPackage,
+    CustomPackageBooking,
 )
 
 admin.site.site_header = _('Администрирование базы отдыха "FurTree"')
@@ -61,38 +67,29 @@ class CustomUserAdmin(UserAdmin):
 
     list_display = (
         "id",
-        "username",
-        "last_name",
-        "patronymic",
+        "get_full_name", 
         "email",
         "phone",
         "is_staff",
+        "is_active",
     )
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
-    search_fields = ("username", "email", "phone", "last_name")
-    ordering = ("last_name", "username")
-
+    search_fields = ("first_name", "last_name", "email", "phone", "patronymic")
+    ordering = ("last_name", "first_name")
+    
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
+        (None, {"fields": ("email", "password")}),
         (
-            "Персональная информация",
-            {"fields": ("last_name", "patronymic", "email", "phone")},
+            "Персональная информация", 
+            {"fields": ("first_name", "last_name", "patronymic", "phone")}
         ),
         (
             "Права",
-            {
-                "fields": (
-                    "is_active",
-                    "is_staff",
-                    "is_superuser",
-                    "groups",
-                    "user_permissions",
-                ),
-            },
+            {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}
         ),
         (
-            "Важные даты",
-            {"fields": ("last_login", "date_joined"), "classes": ("collapse",)},
+            "Важные даты", 
+            {"fields": ("last_login", "date_joined"), "classes": ("collapse",)}
         ),
     )
 
@@ -102,8 +99,8 @@ class CustomUserAdmin(UserAdmin):
             {
                 "classes": ("wide",),
                 "fields": (
-                    "last_name",
-                    "username",
+                    "first_name",
+                    "last_name", 
                     "patronymic",
                     "email",
                     "phone",
@@ -114,9 +111,76 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
 
-    search_fields = ("last_name", "username", "patronymic", "email", "phone")
-    ordering = ("last_name", "username")
+    @admin.display(description="ФИО")
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+    form = CustomUserChangeForm
+    add_form = CustomUserCreationForm
 
+    list_display = (
+        "id",
+        "get_full_name", 
+        "email",
+        "phone",
+        "is_staff",
+        "is_active",
+    )
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+    search_fields = ("first_name", "last_name", "email", "phone", "patronymic")
+    ordering = ("last_name", "first_name")
+    
+    # ТОЛЬКО ДЛЯ ПРОСМОТРА - запрещаем редактирование
+    fieldsets = (
+        (None, {"fields": ("email",)}),
+        (
+            "Персональная информация", 
+            {"fields": ("first_name", "last_name", "patronymic", "phone")}
+        ),
+        (
+            "Права",
+            {"fields": ("is_active", "is_staff", "is_superuser")}
+        ),
+        (
+            "Важные даты", 
+            {"fields": ("last_login", "date_joined"), "classes": ("collapse",)}
+        ),
+    )
+
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "first_name",
+                    "last_name", 
+                    "patronymic",
+                    "email",
+                    "phone",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
+    )
+
+    # КРИТИЧЕСКИ ВАЖНО: Запрещаем изменение существующих записей
+    def has_change_permission(self, request, obj=None):
+        # Разрешаем изменение только при создании нового пользователя
+        if obj is None:  # Это форма добавления
+            return True
+        return False  # Запрещаем редактирование существующих
+    
+    # Разрешаем только добавление и удаление
+    def has_add_permission(self, request):
+        return True
+        
+    def has_delete_permission(self, request, obj=None):
+        return True
+
+    @admin.display(description="ФИО")
+    def get_full_name(self, obj):
+        return obj.get_full_name()
 
 admin.site.register(CustomUser, CustomUserAdmin)
 
@@ -172,7 +236,7 @@ class PostAdmin(ExportMixin, admin.ModelAdmin):
     raw_id_fields = ["author"]
     date_hierarchy = "publish"
     ordering = ["status", "publish"]
-    inlines = [PostTagInline]
+    inlines = []
     list_display_links = ("title", "slug")
     readonly_fields = ("created", "updated", "image_preview")
     verbose_name = _("Пост")
@@ -260,15 +324,16 @@ class ClientResource(resources.ModelResource):
 @admin.register(Client)
 class ClientAdmin(ExportMixin, admin.ModelAdmin):
     list_display = (
-        "last_name",
         "first_name",
+        "last_name", 
         "patronymic",
         "phone_number",
         "email",
         "document_link",
+        #"has_user_account",
     )
-    search_fields = ["last_name", "first_name", "patronymic", "phone_number", "email"]
-    list_filter = ("last_name", "first_name", "patronymic", "phone_number", "email")
+    search_fields = ["first_name", "last_name", "patronymic", "phone_number", "email"]
+    list_filter = ("last_name", "first_name")
     raw_id_fields = ["user"]
     list_per_page = 50
     resource_class = ClientResource
@@ -348,6 +413,19 @@ class HouseResource(resources.ModelResource):
 
     def before_export(self, queryset, *args, **kwargs):
         return queryset.select_related("employee_id")
+
+
+class HouseImageInline(admin.TabularInline):
+    model = HouseImage
+    extra = 1
+    fields = ('image', 'caption', 'order', 'is_main')
+    readonly_fields = ('image_preview',)
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="100" height="75" style="object-fit: cover;" />', obj.image.url)
+        return "Нет изображения"
+    image_preview.short_description = 'Превью'
 
 
 @admin.register(House)
@@ -439,6 +517,26 @@ class HouseAdmin(ExportMixin, admin.ModelAdmin):
                 '<img src="{}" style="max-height: 100px;" />', obj.image.url
             )
         return "-"
+
+    def image_display(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="200" style="object-fit: cover;" />', obj.image.url)
+        return "Главное изображение не установлено"
+    image_display.short_description = 'Текущее главное изображение'
+
+
+@admin.register(HouseImage)
+class HouseImageAdmin(admin.ModelAdmin):
+    list_display = ('house', 'caption', 'order', 'is_main', 'image_preview')
+    list_filter = ('house', 'is_main')
+    list_editable = ('order', 'is_main')
+    search_fields = ('house__name', 'caption')
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" width="100" height="75" style="object-fit: cover;" />', obj.image.url)
+        return "Нет изображения"
+    image_preview.short_description = 'Превью'
 
 
 class FacilityResource(resources.ModelResource):
@@ -571,7 +669,34 @@ class EmployeeAdmin(BaseExportAdmin, admin.ModelAdmin):
     list_filter = ("position_id",)
     search_fields = ("last_name", "first_name", "phone", "email", "position_id__name")
     formats = [CustomXLSXFormat]
-
+    raw_id_fields = ("position_id",)  # Добавляем для лучшего выбора должности
+    
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        """Безопасное редактирование сотрудников"""
+        from django.contrib import messages
+        
+        if object_id:
+            obj = self.get_object(request, object_id)
+            if obj and request.method == 'POST' and 'position_id' in request.POST:
+                # Проверяем, что выбранная должность существует
+                from .models import Position
+                try:
+                    position_id = request.POST.get('position_id')
+                    if position_id and not Position.objects.filter(pk=position_id).exists():
+                        messages.error(request, 'Выбранная должность не существует')
+                        return super().changeform_view(request, object_id, form_url, extra_context)
+                except (ValueError, Position.DoesNotExist):
+                    messages.error(request, 'Некорректная должность')
+                    return super().changeform_view(request, object_id, form_url, extra_context)
+        
+        return super().changeform_view(request, object_id, form_url, extra_context)
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Ограничиваем выбор только существующими должностями
+        if db_field.name == "position_id":
+            kwargs["queryset"] = Position.objects.all()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
     def get_full_name(self, obj):
         return f"{obj.last_name} {obj.first_name} {obj.patronymic or ''}".strip()
 
@@ -615,13 +740,67 @@ class PositionResource(resources.ModelResource):
 class PositionAdmin(ExportMixin, admin.ModelAdmin):
     resource_class = PositionResource
     formats = [CustomXLSXFormat]
-    list_display = ("position_id", "name", "responsibilities")
+    list_display = ("position_id", "name", "get_employee_count", "short_responsibilities")
     search_fields = ("name", "responsibilities")
     list_display_links = ("name",)
     list_filter = ("name",)
-    readonly_fields = ("position_id",)
+    readonly_fields = ("position_id", "get_employee_count_display")
     verbose_name = _("Должность")
     verbose_name_plural = _("Должности")
+    
+    # Запрещаем удаление должностей, на которые есть ссылки
+    def has_delete_permission(self, request, obj=None):
+        if obj:
+            # Проверяем, есть ли сотрудники с этой должностью
+            from .models import Employee
+            if Employee.objects.filter(position_id=obj).exists():
+                return False
+        return super().has_delete_permission(request, obj)
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        """Безопасное редактирование должностей"""
+        from django.contrib import messages
+        
+        if object_id:
+            # Для существующей должности проверяем ссылки
+            obj = self.get_object(request, object_id)
+            if obj and request.method == 'POST':
+                # Проверяем, не пытаются ли изменить должность, на которую есть ссылки
+                from .models import Employee
+                if Employee.objects.filter(position_id=obj).exists():
+                    old_name = obj.name
+                    if 'name' in request.POST and request.POST['name'] != old_name:
+                        messages.warning(
+                            request, 
+                            f'Нельзя изменить название должности "{old_name}", '
+                            f'так как на нее ссылаются сотрудники. '
+                            f'Сначала измените должности у сотрудников.'
+                        )
+                        # Восстанавливаем старое название
+                        request.POST = request.POST.copy()
+                        request.POST['name'] = old_name
+        
+        return super().changeform_view(request, object_id, form_url, extra_context)
+
+    @admin.display(description="Кол-во сотрудников")
+    def get_employee_count(self, obj):
+        from .models import Employee
+        return Employee.objects.filter(position_id=obj).count()
+
+    @admin.display(description="Обязанности")
+    def short_responsibilities(self, obj):
+        # Убираем HTML теги для отображения в списке
+        import re
+        text = re.sub('<[^<]+?>', '', obj.responsibilities)
+        return text[:100] + "..." if len(text) > 100 else text
+
+    @admin.display(description="Количество сотрудников")
+    def get_employee_count_display(self, obj):
+        from .models import Employee
+        count = Employee.objects.filter(position_id=obj).count()
+        if count > 0:
+            return f"{count} сотрудник(ов) - изменение ограничено"
+        return "Нет сотрудников - можно редактировать"
 
 
 class BookingServiceInline(admin.TabularInline):
@@ -658,7 +837,7 @@ class BookingAdmin(ExportMixin, admin.ModelAdmin):
     list_display = (
         "booking_id",
         "get_client",
-        "get_house",
+        "get_house", 
         "check_in_date",
         "check_out_date",
         "get_nights",
@@ -666,32 +845,33 @@ class BookingAdmin(ExportMixin, admin.ModelAdmin):
     )
     list_filter = ("house", "check_in_date", "check_out_date")
     date_hierarchy = "created_at"
-    raw_id_fields = ("client_id", "house", "user")
+    raw_id_fields = ("client_id", "house")
     list_select_related = True
-    readonly_fields = ("get_nights_readonly",)
+    readonly_fields = ("get_nights_readonly", "booking_id", "created_at")
     resource_class = BookingResource
     formats = [CustomXLSXFormat]
-
-    @admin.display(description="Ночи")
-    def get_nights_readonly(self, obj):
-        return self.get_nights(obj)
 
     fieldsets = (
         (
             "Основная информация",
-            {"fields": ("client_id", "house", "user", "client_name")},
+            {"fields": ("client_id", "house", "client_name")},
         ),
         (
             "Даты бронирования",
             {"fields": ("check_in_date", "check_out_date", "guests")},
         ),
         (
-            "Контактные данные",
+            "Контактные данные", 
             {"fields": ("phone_number", "email"), "classes": ("collapse",)},
         ),
-        ("Финансы", {"fields": ("base_cost", "total_cost", "services")}),
-        ("Дополнительно", {"fields": ("comment",), "classes": ("collapse",)}),
+        ("Финансы", {"fields": ("base_cost", "total_cost")}),
+        ("Дополнительные услуги", {"fields": ("services",)}),
+        ("Дополнительно", {"fields": ("comment", "created_at"), "classes": ("collapse",)}),
     )
+
+    @admin.display(description="Ночи")
+    def get_nights_readonly(self, obj):
+        return self.get_nights(obj)
 
     @admin.display(description="Клиент")
     def get_client(self, obj):
@@ -716,39 +896,42 @@ class BookingAdmin(ExportMixin, admin.ModelAdmin):
         return "-"
 
 
-class EventResource(resources.ModelResource):
-    name = fields.Field(column_name="Название", attribute="name")
-    date = fields.Field(column_name="Дата", attribute="date")
-    location = fields.Field(column_name="Место проведения", attribute="location")
+# class EventResource(resources.ModelResource):
+#     name = fields.Field(column_name="Название", attribute="name")
+#     date = fields.Field(column_name="Дата", attribute="date")
+#     location = fields.Field(column_name="Место проведения", attribute="location")
 
-    class Meta:
-        model = Event
-        fields = ("id", "name", "date", "location")
-        export_order = fields
-        verbose_name_rus = "Мероприятия"
+#     class Meta:
+#         model = Event
+#         fields = ("id", "name", "date", "location")
+#         export_order = fields
+#         verbose_name_rus = "Мероприятия"
 
 
-@admin.register(Event)
-class EventAdmin(ExportMixin, admin.ModelAdmin):
-    resource_class = EventResource
-    formats = [CustomXLSXFormat]
-    list_display = ("name", "date", "location")
-    search_fields = ("name", "location")
-    list_filter = ("date",)
-    readonly_fields = ("event_id",)
-    raw_id_fields = ("booking_id",)
-    verbose_name = _("Мероприятие")
-    verbose_name_plural = _("Мероприятия")
+# @admin.register(Event)
+# class EventAdmin(admin.ModelAdmin):  # Убрали ExportMixin временно
+#     list_display = ("name", "date", "location")
+#     search_fields = ("name", "location")
+#     list_filter = ("date",)
+#     readonly_fields = ("event_id",)
+    
+#     # ВРЕМЕННО полность уберите все кастомные методы
+    
+#     fieldsets = (
+#         ('Основная информация', {
+#             'fields': ('name', 'date', 'location', 'event_url', 'image')
+#         }),
+#         ('Бронирование (необязательно)', {
+#             'fields': ('booking_id',),
+#             'classes': ('collapse',)
+#         }),
+#     )
 
-    @admin.display(description="Бронирование")
-    def booking_link(self, obj):
-        if obj.booking_id:  # Используем booking_id вместо booking
-            return format_html(
-                '<a href="/admin/recreation/booking/{}/change/">{}</a>',
-                obj.booking_id.booking_id,
-                f"Бронирование #{obj.booking_id.booking_id}",
-            )
-        return "-"
+#     def get_form(self, request, obj=None, **kwargs):
+#         form = super().get_form(request, obj, **kwargs)
+#         form.base_fields['booking_id'].required = False
+#         form.base_fields['booking_id'].empty_label = "--- Не выбрано ---"
+#         return form
 
 
 class ServiceResource(resources.ModelResource):
@@ -902,3 +1085,53 @@ class PaymentAdmin(ExportMixin, admin.ModelAdmin):  # <- ВАЖНО: PaymentAdmi
 
     def has_delete_permission(self, request, obj=None):
         return False
+    
+
+# Админ-панель для пакетного конструктора (добавить в конец файла)
+class PackageServiceInline(admin.TabularInline):
+    model = PackageService
+    extra = 1
+    raw_id_fields = ['service']
+
+
+class PackageOptionInline(admin.TabularInline):
+    model = PackageOption
+    extra = 1
+
+
+@admin.register(TravelPackage)
+class TravelPackageAdmin(admin.ModelAdmin):
+    list_display = ['name', 'package_type', 'base_house', 'duration_days', 'base_price', 'local_discount', 'is_active']
+    list_filter = ['package_type', 'is_active', 'base_house']
+    search_fields = ['name', 'description']
+    inlines = [PackageOptionInline]
+    
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('name', 'package_type', 'description', 'base_house', 'image')
+        }),
+        ('Параметры', {
+            'fields': ('duration_days', 'min_guests', 'max_guests', 'base_price')
+        }),
+        ('Для местных жителей', {
+            'fields': ('local_discount', 'quick_booking', 'flexible_checkin')
+        }),
+        ('Статус', {
+            'fields': ('is_active',)
+        }),
+    )
+
+
+@admin.register(PackageOption)
+class PackageOptionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'package', 'option_type', 'price', 'popular_local', 'is_active']
+    list_filter = ['option_type', 'popular_local', 'is_active', 'package']
+    search_fields = ['name', 'description']
+
+
+@admin.register(CustomPackageBooking)
+class CustomPackageBookingAdmin(admin.ModelAdmin):
+    list_display = ['booking', 'travel_package', 'total_package_price']
+    list_filter = ['travel_package']
+    raw_id_fields = ['booking']
+    readonly_fields = ['total_package_price']

@@ -62,6 +62,32 @@
         }
 
         /* Header */
+        .global-stats {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ffc107; /* Золотой цвет звёзд */
+            display: inline-block;
+        }
+
+        .star-rating .fas.fa-star,
+        .star-rating .fas.fa-star-half-alt {
+            color: #ffc107;
+        }
+
+        .star-rating .far.fa-star {
+            color: #ddd; /* Цвет пустых звёзд */
+        }
+
+        .review-count {
+            font-size: 16px;
+            color: #666;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
         .navbar {
             background-color: var(--secondary-color) !important;
             padding: 15px 0;
@@ -84,6 +110,14 @@
         .navbar-nav .nav-link:hover {
             color: var(--dark-brown) !important;
             transform: translateY(-2px);
+        }
+
+        .navbar-toggler {
+            border-color: var(--primary-color);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(134, 68, 33, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
         }
 
         .cottages-section {
@@ -115,6 +149,18 @@
             object-fit: cover;
         }
 
+        .cottage-card.border-danger {
+            border: 2px solid #dc3545 !important;
+            opacity: 0.9;
+        }
+        .cottage-card.border-danger .card-body {
+            background-color: #f8f9fa;
+        }
+        .btn.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
         .book-btn {
             background-color: var(--primary-color);
             color: white;
@@ -144,6 +190,7 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .footer-links a {
@@ -209,19 +256,33 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="global-stats">
+                <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
+                    {% for i in "12345" %}
+                        {% if global_avg_rating >= forloop.counter %}
+                            <i class="fas fa-star active"></i>
+                        {% elif global_avg_rating|add:-0.5 >= forloop.counter|add:-1 %}
+                            <i class="fas fa-star-half-alt active"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="review-count">({{ global_total_reviews }})</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cottages' %}">Коттеджи</a>
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
@@ -232,6 +293,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -239,73 +303,93 @@
 
     <section class="cottages-section py-5">
         <div class="container">
-            <h1 class="section-title text-center mb-5">Наши коттеджи</h1>
+            <h1 class="section-title text-center mb-5">Наши дома для отдыха</h1>
             
             <!-- Объединенная форма фильтрации -->
             <div class="filter-box">
-                <form method="get" class="filter-form">
+                <form method="get" class="filter-form" id="bookingForm">
                     <!-- Ваши оригинальные поля -->
                     <div>
-                        <label for="check_in">Заезд</label>
+                        <label for="check_in">Дата заезда *</label>
                         <input type="date" id="check_in" name="check_in" class="form-control" 
-                               value="{{ check_in }}" min="{{ today }}">
+                            value="{{ check_in }}" min="{{ today }}" required>
+                        <div class="invalid-feedback">Пожалуйста, выберите дату заезда</div>
                     </div>
                     <div>
-                        <label for="check_out">Выезд</label>
+                        <label for="check_out">Дата выезда *</label>
                         <input type="date" id="check_out" name="check_out" class="form-control" 
-                               value="{{ check_out }}" min="{{ tomorrow }}">
+                            value="{{ check_out }}" min="{{ tomorrow }}" required>
+                        <div class="invalid-feedback">Пожалуйста, выберите дату выезда</div>
                     </div>
                     <div>
-                        <label for="guests">Гости</label>
-                        <select name="guests" id="guests" class="form-control">
+                        <label for="guests">Гости *</label>
+                        <select name="guests" id="guests" class="form-control" required>
+                            <option value="">Выберите количество</option>
                             {% for i in guest_range %}
-                                <option value="{{ i }}" {% if guests == i %}selected{% endif %}>{{ i }} чел.</option>
+                                <option value="{{ i }}" {% if guests == i %}selected{% endif %}>
+                                    {{ i }} чел.
+                                </option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">Пожалуйста, выберите количество гостей</div>
                     </div>
 
                     <!-- Новые поля фильтрации -->
                     <div>
                         <label for="min_price">Цена от (руб.)</label>
                         <input type="number" id="min_price" name="min_price" class="form-control" 
-                               value="{{ request.GET.min_price }}" min="0">
+                            value="{{ request.GET.min_price }}" min="0">
                     </div>
                     <div>
                         <label for="max_price">Цена до (руб.)</label>
                         <input type="number" id="max_price" name="max_price" class="form-control" 
-                               value="{{ request.GET.max_price }}" min="0">
+                            value="{{ request.GET.max_price }}" min="0">
                     </div>
                     <div>
                         <label for="name_contains">Название</label>
                         <input type="text" id="name_contains" name="name_contains" class="form-control" 
-                               value="{{ request.GET.name_contains }}" placeholder="Поиск...">
+                            value="{{ request.GET.name_contains }}" placeholder="Поиск...">
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="form-check">
                             <input type="checkbox" id="has_location" name="has_location" 
-                                   class="form-check-input" {% if request.GET.has_location %}checked{% endif %}>
+                                class="form-check-input" {% if request.GET.has_location %}checked{% endif %}>
                             <label for="has_location" class="form-check-label">С адресом</label>
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">Применить</button>
+                        <button type="submit" class="btn btn-primary">Найти домики</button>
                         <a href="{% url 'cottages' %}" class="btn btn-outline-secondary">Сбросить</a>
                     </div>
                 </form>
             </div>
 
-            <!-- Список коттеджей -->
+            <!-- Список домов -->
             <div class="row">
                 {% for house in houses_data %}
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="cottage-card card h-100">
-                        <img src="{% static 'images/' %}{{ house.obj.slug }}.jpg" 
+                    <div class="cottage-card card h-100 {% if check_in and check_out and not house.is_available %}border-danger{% endif %}">
+                        <img src="{{ house.obj.get_image_url }}" 
                             class="card-img-top" 
                             alt="{{ house.obj.name }}"
-                            onerror="this.onerror=null;this.src='{% static 'images/image.jpg' %}'">
+                            style="height: 250px; object-fit: cover;"
+                            onerror="this.onerror=null; this.src='{% static 'images/no-image.svg' %}'">
                         
                         <div class="card-body">
                             <h5 class="card-title">{{ house.obj.name }}</h5>
+                            
+                            <!-- БЛОК СТАТУСА ДОСТУПНОСТИ -->
+                            {% if check_in and check_out %}
+                                <div class="mb-2">
+                                    {% if house.is_available %}
+                                    <span class="badge bg-success">✅ Доступен на выбранные даты</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">❌ Занят на выбранные даты</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            <!-- КОНЕЦ БЛОКА СТАТУСА ДОСТУПНОСТИ -->
+                            
                             <p class="card-text">
                                 <i class="fas fa-map-marker-alt"></i> 
                                 {{ house.obj.location|default:"Адрес не указан" }}
@@ -319,8 +403,9 @@
                             
                             <div class="d-grid gap-2">
                                 <a href="{% url 'booking' %}?house={{ house.obj.house_id }}&check_in={{ check_in|urlencode }}&check_out={{ check_out|urlencode }}&guests={{ guests }}" 
-                                   class="btn btn-primary">
-                                    Забронировать
+                                    class="btn {% if check_in and check_out and not house.is_available %}btn-secondary disabled{% else %}btn-primary{% endif %}"
+                                    {% if check_in and check_out and not house.is_available %}onclick="return false;" aria-disabled="true"{% endif %}>
+                                        {% if check_in and check_out and not house.is_available %}Занят{% else %}Забронировать{% endif %}
                                 </a>
                                 <a href="{% url 'cottage_detail' slug=house.obj.slug %}" 
                                    class="btn btn-outline-primary">
@@ -346,23 +431,29 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
-                    <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
                     <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="#">Главная</a>
-                        <a href="{% url 'cottages' %}">Коттеджи</a>
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
                         <a href="{% url 'all_reviews' %}">Отзывы</a>
-                        <a href="#">О нас</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
                     </div>
                 </div>
                 
@@ -370,8 +461,12 @@
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
                         <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
                     </div>
                 </div>
                 
@@ -379,14 +474,14 @@
                     <h3 class="footer-title">Мы на карте</h3>
                     <div class="map-container">
                         <iframe 
-                            src="https://yandex.ru/map-widget/v1/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                             width="100%" 
                             height="250"
                             frameborder="0" 
                             allowfullscreen="true"
-                            style="border: 1px solid #ddd; border-radius: 4px;">
+                            style="border: 1px solid #ddd; border-radius: 8px;">
                         </iframe>
-                        <a href="https://yandex.ru/maps/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                         target="_blank" 
                         class="btn btn-sm btn-outline-secondary mt-2 d-block">
                             Открыть в Яндекс.Картах
@@ -396,7 +491,7 @@
             </div>
             
             <div class="copyright">
-                <p class="mb-0">© 2025 База отдыха FurTree. Все права защищены.</p>
+                <p class="mb-0">© 2026 База отдыха Ёлки. Все права защищены.</p>
                 <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
             </div>
         </div>
@@ -408,7 +503,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
     <script>
-    // Управление датами
+    // Управление датами и валидация
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         const tomorrow = new Date();
@@ -418,12 +513,11 @@
         // Устанавливаем минимальные даты
         const checkIn = document.getElementById('check_in');
         const checkOut = document.getElementById('check_out');
+        const guests = document.getElementById('guests');
+        const bookingForm = document.getElementById('bookingForm');
         
         checkIn.min = today;
-        if (!checkIn.value) checkIn.value = today;
-        
         checkOut.min = tomorrowStr;
-        if (!checkOut.value) checkOut.value = tomorrowStr;
         
         // Обновляем минимальную дату выезда при изменении даты заезда
         checkIn.addEventListener('change', function() {
@@ -435,6 +529,58 @@
                     checkOut.value = nextDay.toISOString().split('T')[0];
                 }
             }
+        });
+        
+        // Валидация формы
+        bookingForm.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Сбрасываем предыдущие ошибки
+            document.querySelectorAll('.is-invalid').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+            
+            // Проверка даты заезда
+            if (!checkIn.value) {
+                checkIn.classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            // Проверка даты выезда
+            if (!checkOut.value) {
+                checkOut.classList.add('is-invalid');
+                isValid = false;
+            } else if (checkIn.value && new Date(checkOut.value) <= new Date(checkIn.value)) {
+                checkOut.classList.add('is-invalid');
+                alert('Дата выезда должна быть позже даты заезда');
+                isValid = false;
+            }
+            
+            // Проверка количества гостей
+            if (!guests.value) {
+                guests.classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                // Показываем общее сообщение об ошибке
+                if (!document.querySelector('.alert-danger')) {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger mt-3';
+                    alertDiv.innerHTML = '<strong>Ошибка!</strong> Пожалуйста, заполните все обязательные поля (*)';
+                    bookingForm.parentNode.insertBefore(alertDiv, bookingForm.nextSibling);
+                }
+            }
+        });
+        
+        // Убираем ошибки при вводе
+        [checkIn, checkOut, guests].forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+                const alert = document.querySelector('.alert-danger');
+                if (alert) alert.remove();
+            });
         });
     });
     </script>

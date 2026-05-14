@@ -1,0 +1,1334 @@
+[
+{
+  "model": "recreation.tag",
+  "pk": 1,
+  "fields": {
+    "name": "Отдых"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 2,
+  "fields": {
+    "name": "Акции"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 3,
+  "fields": {
+    "name": "Новости"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 4,
+  "fields": {
+    "name": "События"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 5,
+  "fields": {
+    "name": "Советы"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 6,
+  "fields": {
+    "name": "Лето"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 7,
+  "fields": {
+    "name": "Релакс"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 8,
+  "fields": {
+    "name": "Дети"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 9,
+  "fields": {
+    "name": "услуги"
+  }
+},
+{
+  "model": "recreation.tag",
+  "pk": 10,
+  "fields": {
+    "name": "Шашлыки"
+  }
+},
+{
+  "model": "recreation.post",
+  "pk": 1,
+  "fields": {
+    "title": "Новый сезон открыт!",
+    "slug": "new-season",
+    "author": 2,
+    "body": "Мы рады сообщить об открытии нового сезона на нашей базе отдыха. В этом году мы подготовили для вас много интересных нововведений и специальных предложений.",
+    "publish": "2025-05-14T23:01:41.407",
+    "created": "2025-05-14T23:01:41.407",
+    "updated": "2025-11-19T01:08:49.153",
+    "status": "published",
+    "image": "post1.jpg"
+  }
+},
+{
+  "model": "recreation.post",
+  "pk": 2,
+  "fields": {
+    "title": "Специальное предложение для молодоженов",
+    "slug": "wedding-offer",
+    "author": 2,
+    "body": "В этом сезоне мы предлагаем специальные условия для проведения свадебных мероприятий. Скидка 15% на аренду коттеджей для молодоженов!",
+    "publish": "2025-05-14T23:01:41.418",
+    "created": "2025-05-14T23:01:41.418",
+    "updated": "2025-05-14T23:01:41.418",
+    "status": "published",
+    "image": "post2.jpg"
+  }
+},
+{
+  "model": "recreation.post",
+  "pk": 3,
+  "fields": {
+    "title": "Как подготовиться к отдыху на природе",
+    "slug": "preparation-tips",
+    "author": 2,
+    "body": "В этой статье мы расскажем, что взять с собой на отдых в наш комплекс, чтобы ничего не забыть и получить максимум удовольствия.",
+    "publish": "2025-05-14T23:01:41.432",
+    "created": "2025-05-14T23:01:41.432",
+    "updated": "2025-05-14T23:01:41.432",
+    "status": "published",
+    "image": "post3.jpg"
+  }
+},
+{
+  "model": "recreation.post",
+  "pk": 4,
+  "fields": {
+    "title": "Новые услуги в SPA-центре",
+    "slug": "new-spa-services",
+    "author": 2,
+    "body": "Наш SPA-центр расширяет перечень услуг. Теперь доступны новые виды массажа и косметические процедуры.",
+    "publish": "2025-05-14T23:01:41.443",
+    "created": "2025-05-14T23:01:41.443",
+    "updated": "2025-05-14T23:01:41.443",
+    "status": "published",
+    "image": "post4.jpg"
+  }
+},
+{
+  "model": "recreation.post",
+  "pk": 5,
+  "fields": {
+    "title": "Фестиваль барбекю - 2023",
+    "slug": "bbq-festival",
+    "author": 2,
+    "body": "Приглашаем всех на ежегодный фестиваль барбекю, который пройдет 15-17 июля. В программе: мастер-классы, конкурсы и дегустации.",
+    "publish": "2025-05-14T23:01:41.457",
+    "created": "2025-05-14T23:01:41.457",
+    "updated": "2025-05-14T23:01:41.457",
+    "status": "published",
+    "image": "post5.jpg"
+  }
+},
+{
+  "model": "recreation.post",
+  "pk": 6,
+  "fields": {
+    "title": "Можно ли получить скидку в FurTree?",
+    "slug": "furtree",
+    "author": 1,
+    "body": "База отдыха всегда рада видеть гостей! Мы стремимся сделать ваш отдых комфортным и долгожданным.\r\n\r\nА чтобы сделать отдых ещё приятнее, для Вас, дорогие наши гости, мы открываем бронирование коттеджей на летний период со скидкой 15% для тех, кто ещё у нас не был, а также для тех, кто более года не посещал нас. \r\n\r\nНапоминаем, что у нас теперь есть возможность забронировать горячий сибирский чан и организацию вашего праздника под ключ. Спешите забронировать, пока есть свободные даты!\r\n\r\n\r\n----\r\nДля получения скидки нужно обращаться на стойку регистрации по адресу Свердловская область, д. Савино, ул. Набережная, д. 1.\r\nСкидка будет оформлена перед полной оплатой бронирования.",
+    "publish": "2025-05-19T18:35:53",
+    "created": "2025-05-19T18:46:50.480",
+    "updated": "2025-05-19T19:28:46.274",
+    "status": "published",
+    "image": "post_images/devushka_v_chane.jpg"
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 1,
+  "fields": {
+    "post": 1,
+    "tag": 1
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 2,
+  "fields": {
+    "post": 1,
+    "tag": 3
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 3,
+  "fields": {
+    "post": 2,
+    "tag": 2
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 4,
+  "fields": {
+    "post": 2,
+    "tag": 4
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 5,
+  "fields": {
+    "post": 3,
+    "tag": 5
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 6,
+  "fields": {
+    "post": 3,
+    "tag": 1
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 7,
+  "fields": {
+    "post": 4,
+    "tag": 3
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 8,
+  "fields": {
+    "post": 4,
+    "tag": 4
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 9,
+  "fields": {
+    "post": 5,
+    "tag": 4
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 10,
+  "fields": {
+    "post": 5,
+    "tag": 2
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 11,
+  "fields": {
+    "post": 6,
+    "tag": 1
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 12,
+  "fields": {
+    "post": 6,
+    "tag": 2
+  }
+},
+{
+  "model": "recreation.posttag",
+  "pk": 13,
+  "fields": {
+    "post": 6,
+    "tag": 3
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$O6xYwDz2jujwbwcVdKhEdt$ywCtxSBSyFWIAMq6nqMPlZDtFe64FmX26UGvYkPUAYA=",
+    "last_login": "2025-11-19T10:45:13.433",
+    "is_superuser": true,
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-05-18T20:27:01",
+    "username": "2005.zmeeva@bk.ru",
+    "phone": "+79026458366",
+    "email": "2005.zmeeva@bk.ru",
+    "last_name": "Змеева",
+    "first_name": "Дарья",
+    "patronymic": "Васильевна",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$Zpx1gAkJeNwq6XoajPaSqi$Ogr0Tjlkhz3qIHT3ovbJKV93Ltpb+dkSI6zvLf4uq4s=",
+    "last_login": "2025-05-19T21:23:39.943",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-05-19T21:23:39.103",
+    "username": "gudkov-olezhka@bk.ru",
+    "phone": "+70000000000",
+    "email": "gudkov-olezhka@bk.ru",
+    "last_name": "User",
+    "first_name": "Gudkov-Olezhka",
+    "patronymic": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$dB6dGNjRzM8UlIxiy2OHMT$v4+jjfo70k/NidteCCgk2Nij2CX3W4r3Cz3LooOiG3M=",
+    "last_login": "2025-11-17T19:48:20",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-05-20T19:02:17",
+    "username": "kim@mail.ru",
+    "phone": "+79929929292",
+    "email": "kim@mail.ru",
+    "last_name": "Ким",
+    "first_name": "Виктория",
+    "patronymic": "Владимировна",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$vbrQeH9AAClpE8zaUNFP4R$NOpVxKuq2KyWOmNLRqH8yAv+OgltbPUoOQi8SAf/TOQ=",
+    "last_login": "2025-06-23T19:14:47",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-05-20T19:43:37",
+    "username": "anelaz@rambler.ru",
+    "phone": "+79082480417",
+    "email": "anelaz@rambler.ru",
+    "last_name": "Змеева",
+    "first_name": "Елена",
+    "patronymic": "Владимировна",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$QCxtaTB5YT7YHSpKn72bwN$Z0qqT88g7QrO2BrCfHltukWrRtitoRCEa+mFlwvVMqE=",
+    "last_login": "2025-11-17T19:02:26.844",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-17T19:02:26.182",
+    "username": "tarizkaya@mail.ru",
+    "phone": "+79024343434",
+    "email": "tarizkaya@mail.ru",
+    "last_name": "Тарицкая",
+    "first_name": "Варвара",
+    "patronymic": "Сергеевна",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$V6fgve7CWv8M94Lq6864Wu$YP0b0cTmB8vOZ4uf0CHKjI/ZXm5KURTRDilEn6YPs5Q=",
+    "last_login": "2025-11-17T19:04:26.194",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-17T19:04:25.550",
+    "username": "milanovla@mail.ru",
+    "phone": "+79092323234",
+    "email": "milanovla@mail.ru",
+    "last_name": "Миланов",
+    "first_name": "Леонид",
+    "patronymic": "Алексеевич",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$0RGcBpGAJbm9GH6DBDHvzr$NsRhKK25JvRwS6tjGTeZsFOeE79R6RZTuCSYT0TJQ+U=",
+    "last_login": "2025-11-17T19:24:33.710",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-17T19:24:32.958",
+    "username": "nazarovai@mail.ru",
+    "phone": "+79121242423",
+    "email": "nazarovai@mail.ru",
+    "last_name": "Назаров",
+    "first_name": "Андрей",
+    "patronymic": "Ильич",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$xpFvlCNuVnChDpTCHKRy13$y1l1WZwz6ESN8PzPpzxZcCoTQPTmxUEEav0lbtLwxOw=",
+    "last_login": "2025-11-17T19:29:41.172",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-17T19:29:40.536",
+    "username": "nazarovaav@mail.ru",
+    "phone": "+79024394384",
+    "email": "nazarovaav@mail.ru",
+    "last_name": "Назарова",
+    "first_name": "Анастасия",
+    "patronymic": "Васильевна",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$MJVslmeVc2qZpFs12M8FCr$aS/o/le0tGaHVBtzjpJ5ZH5wL5Acn0Wcw1h8jl0pJDU=",
+    "last_login": "2025-11-17T20:34:22.530",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-17T20:26:05.881",
+    "username": "begunovda@mail.ru",
+    "phone": "+79025453242",
+    "email": "begunovda@mail.ru",
+    "last_name": "Бегунов",
+    "first_name": "Динар",
+    "patronymic": "Альбертович",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$NBwXIUEEg2g9iP8WsrvkTB$v3cfjThdWXDF5DPhCAlCHx9mwzC7Q4yh21FbsOp4LBM=",
+    "last_login": "2025-11-17T22:20:25.438",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-17T22:20:24.690",
+    "username": "babushkinaae@mail.ru",
+    "phone": "+79324438471",
+    "email": "babushkinaae@mail.ru",
+    "last_name": "Бабушкина",
+    "first_name": "Алиса",
+    "patronymic": "Евгеньевна",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$AmXO3Qv5WeT9GZBwyhPQPC$Bu0HeTdhwycpc9/0pm9G8/FOiP76LT4O+4ET5fJOCRM=",
+    "last_login": "2025-11-20T14:39:51.038",
+    "is_superuser": true,
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-17T23:40:42.563",
+    "username": "admin@example.com",
+    "phone": "+79999999999",
+    "email": "admin@example.com",
+    "last_name": "Adminov",
+    "first_name": "Admin",
+    "patronymic": "Adminovich",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 14,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$u4li7Q7QlFHyrQnU9THmuY$pB6ipse3NjrNjmNHUHQ8P1G/SfbuMHTjoWJJv2dK1NQ=",
+    "last_login": "2025-11-18T01:23:04.684",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-17T23:48:09.537",
+    "username": "zhuravlevds@example.com",
+    "phone": "+79777232382",
+    "email": "zhuravlevds@example.com",
+    "last_name": "Журавлёв",
+    "first_name": "Дмитрий",
+    "patronymic": "Славянович",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 15,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$z4uxkkIsmOzVCOjKz2I56n$foHPWLcoGZPLr2DcFa+VBFL2gQgU8Br1gDjMLVMoGxM=",
+    "last_login": "2025-11-18T14:46:20.094",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-18T14:46:19.666",
+    "username": "olezhka@gudkov.ru",
+    "phone": "+79032323923",
+    "email": "olezhka@gudkov.ru",
+    "last_name": "Гудков",
+    "first_name": "Олег",
+    "patronymic": "Анатольевич",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 16,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$yB7Qqc7OOJVQIoeG8BCaBw$BueIldEGtPQFceQKu+9h9WNLpb0KPnjw/YqTxfiCxiM=",
+    "last_login": "2025-11-19T10:45:03.276",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-18T18:12:51.587",
+    "username": "moskovskiymm@example.com",
+    "phone": "+79777777777",
+    "email": "moskovskiymm@example.com",
+    "last_name": "Московский",
+    "first_name": "Москвитий",
+    "patronymic": "Москович",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 17,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$c9NJjpdI9F49DpqcpxpFXg$mGFpnD2hwozy8oVE+Qy/g99Ssb/cn44DkjVp1qJYENk=",
+    "last_login": "2025-11-19T10:56:42.935",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-19T00:13:27.743",
+    "username": "zhukov@serg.ru",
+    "phone": "+79773422434",
+    "email": "zhukov@serg.ru",
+    "last_name": "Жуков",
+    "first_name": "Сергей",
+    "patronymic": "Сергеевич",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 18,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$W0tjnI1e95GCTQkTV6sO1k$NUC6zpIkIAoCPJroJhMWYHf3tM053LyQUiYSQodlr2A=",
+    "last_login": "2025-11-19T10:25:00.834",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-19T10:24:59.992",
+    "username": "kirkorov@filipp.ru",
+    "phone": "+79028349384",
+    "email": "kirkorov@filipp.ru",
+    "last_name": "Киркоров",
+    "first_name": "Филипп",
+    "patronymic": "Филиппович",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 19,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$5v529Saenoi28tIZH8U8BT$YgKhOvGYl4TPApel9JyY0OSVEZHkNwUl92872lpBbgo=",
+    "last_login": "2025-11-19T10:43:17.244",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-19T10:43:16.578",
+    "username": "ivanov@ivan.ru",
+    "phone": "+79934354343",
+    "email": "ivanov@ivan.ru",
+    "last_name": "Иванов",
+    "first_name": "Иван",
+    "patronymic": "Иванович",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.customuser",
+  "pk": 20,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$eynXGI7FUmpdz6mm89Z6K7$o5mNPXOe4L8ZmHMn4I34s8e+vzV1EUJAZrhjsytsMX8=",
+    "last_login": "2025-11-19T11:41:33.686",
+    "is_superuser": false,
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-19T11:41:33.031",
+    "username": "ivan@ivanich.ru",
+    "phone": "+79867678999",
+    "email": "ivan@ivanich.ru",
+    "last_name": "Иванов",
+    "first_name": "Иван",
+    "patronymic": "Иванович",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 1,
+  "fields": {
+    "user": null,
+    "last_name": "Иванов",
+    "first_name": "Алексей",
+    "patronymic": "Игоревич",
+    "phone_number": "+79120000001",
+    "email": "ivanov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 2,
+  "fields": {
+    "user": null,
+    "last_name": "Петрова",
+    "first_name": "Мария",
+    "patronymic": "Сергеевна",
+    "phone_number": "+79120000002",
+    "email": "petrova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 3,
+  "fields": {
+    "user": null,
+    "last_name": "Сидоров",
+    "first_name": "Дмитрий",
+    "patronymic": "Алексеевич",
+    "phone_number": "+79120000003",
+    "email": "sidorov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 4,
+  "fields": {
+    "user": null,
+    "last_name": "Кузнецова",
+    "first_name": "Анна",
+    "patronymic": "Дмитриевна",
+    "phone_number": "+79120000004",
+    "email": "kuznetsova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 5,
+  "fields": {
+    "user": null,
+    "last_name": "Смирнов",
+    "first_name": "Иван",
+    "patronymic": "Петрович",
+    "phone_number": "+79120000005",
+    "email": "smirnov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 6,
+  "fields": {
+    "user": null,
+    "last_name": "Васильева",
+    "first_name": "Елена",
+    "patronymic": "Ивановна",
+    "phone_number": "+79120000006",
+    "email": "vasileva@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 7,
+  "fields": {
+    "user": null,
+    "last_name": "Николаев",
+    "first_name": "Андрей",
+    "patronymic": "Викторович",
+    "phone_number": "+79120000007",
+    "email": "nikolaev@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 8,
+  "fields": {
+    "user": null,
+    "last_name": "Орлова",
+    "first_name": "Виктория",
+    "patronymic": "Александровна",
+    "phone_number": "+79120000008",
+    "email": "orlova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 9,
+  "fields": {
+    "user": null,
+    "last_name": "Федоров",
+    "first_name": "Сергей",
+    "patronymic": "Николаевич",
+    "phone_number": "+79120000009",
+    "email": "fedorov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 10,
+  "fields": {
+    "user": null,
+    "last_name": "Жукова",
+    "first_name": "Ольга",
+    "patronymic": "Сергеевна",
+    "phone_number": "+79120000010",
+    "email": "zhukova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 11,
+  "fields": {
+    "user": 1,
+    "last_name": "Змеева",
+    "first_name": "Дарья",
+    "patronymic": "Васильевна",
+    "phone_number": "+79026458366",
+    "email": "2005.zmeeva@bk.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 15,
+  "fields": {
+    "user": 5,
+    "last_name": "Змеева",
+    "first_name": "Елена",
+    "patronymic": "Владимировна",
+    "phone_number": "+79082480417",
+    "email": "anelaz@rambler.ru",
+    "document": "client_documents/2025/05/22/photo_2025-02-10_02-48-19.jpg"
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 16,
+  "fields": {
+    "user": 4,
+    "last_name": "Ким",
+    "first_name": "Виктория",
+    "patronymic": "Владимировна",
+    "phone_number": "+79929929292",
+    "email": "kim@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 17,
+  "fields": {
+    "user": 11,
+    "last_name": "Бегунов",
+    "first_name": "Динар",
+    "patronymic": "Альбертович",
+    "phone_number": "+79025453242",
+    "email": "begunovda@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 18,
+  "fields": {
+    "user": 12,
+    "last_name": "Бабушкина",
+    "first_name": "Алиса",
+    "patronymic": "Евгеньевна",
+    "phone_number": "+79324438471",
+    "email": "babushkinaae@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 19,
+  "fields": {
+    "user": 14,
+    "last_name": "Журавлёв",
+    "first_name": "Дмитрий",
+    "patronymic": "Славянович",
+    "phone_number": "+79777232382",
+    "email": "zhuravlevds@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 20,
+  "fields": {
+    "user": 13,
+    "last_name": "Adminov",
+    "first_name": "Admin",
+    "patronymic": "Adminovich",
+    "phone_number": "+79999999999",
+    "email": "admin@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 21,
+  "fields": {
+    "user": 15,
+    "last_name": "Гудков",
+    "first_name": "Олег",
+    "patronymic": "Анатольевич",
+    "phone_number": "+79032323923",
+    "email": "olezhka@gudkov.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 22,
+  "fields": {
+    "user": 16,
+    "last_name": "Московский",
+    "first_name": "Москвитий",
+    "patronymic": "Москович",
+    "phone_number": "+79777777777",
+    "email": "moskovskiymm@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 23,
+  "fields": {
+    "user": null,
+    "last_name": "Временный",
+    "first_name": "Клиент",
+    "patronymic": "Для бронирований",
+    "phone_number": "+70000000000",
+    "email": "temp@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 24,
+  "fields": {
+    "user": 17,
+    "last_name": "Жуков",
+    "first_name": "Сергей",
+    "patronymic": "Сергеевич",
+    "phone_number": "+79773422434",
+    "email": "zhukov@serg.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 25,
+  "fields": {
+    "user": 18,
+    "last_name": "Киркоров",
+    "first_name": "Филипп",
+    "patronymic": "Филиппович",
+    "phone_number": "+79028349384",
+    "email": "kirkorov@filipp.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 26,
+  "fields": {
+    "user": 19,
+    "last_name": "Иванов",
+    "first_name": "Иван",
+    "patronymic": "Иванович",
+    "phone_number": "+79934354343",
+    "email": "ivanov@ivan.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 27,
+  "fields": {
+    "user": 20,
+    "last_name": "Иванов",
+    "first_name": "Иван",
+    "patronymic": "Иванович",
+    "phone_number": "+79867678999",
+    "email": "ivan@ivanich.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 1,
+  "fields": {
+    "position_id": 1,
+    "last_name": "Иванова",
+    "first_name": "Ольга",
+    "patronymic": "Сергеевна",
+    "contact_info": "+79111234567",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 2,
+  "fields": {
+    "position_id": 2,
+    "last_name": "Петров",
+    "first_name": "Иван",
+    "patronymic": "Алексеевич",
+    "contact_info": "+79119876543",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 3,
+  "fields": {
+    "position_id": 3,
+    "last_name": "Сидорова",
+    "first_name": "Анна",
+    "patronymic": "Петровна",
+    "contact_info": "+79112345678",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 4,
+  "fields": {
+    "position_id": 4,
+    "last_name": "Кузнецов",
+    "first_name": "Алексей",
+    "patronymic": "Дмитриевич",
+    "contact_info": "+79118765432",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 5,
+  "fields": {
+    "position_id": 5,
+    "last_name": "Смирнов",
+    "first_name": "Дмитрий",
+    "patronymic": "Игоревич",
+    "contact_info": "+79113456789",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 6,
+  "fields": {
+    "position_id": 6,
+    "last_name": "Васильева",
+    "first_name": "Елена",
+    "patronymic": "Викторовна",
+    "contact_info": "+79117654321",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 7,
+  "fields": {
+    "position_id": 7,
+    "last_name": "Николаев",
+    "first_name": "Андрей",
+    "patronymic": "Сергеевич",
+    "contact_info": "+79114567890",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.employee",
+  "pk": 8,
+  "fields": {
+    "position_id": 8,
+    "last_name": "Орлова",
+    "first_name": "Виктория",
+    "patronymic": "Андреевна",
+    "contact_info": "+79115678901",
+    "phone": null,
+    "email": null,
+    "hire_date": null
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 1,
+  "fields": {
+    "name": "Администратор",
+    "responsibilities": "Управление базой отдыха, работа с клиентами"
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 2,
+  "fields": {
+    "name": "Горничная",
+    "responsibilities": "Уборка коттеджей и территории"
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 3,
+  "fields": {
+    "name": "Повар",
+    "responsibilities": "Приготовление блюд для гостей"
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 4,
+  "fields": {
+    "name": "Аниматор",
+    "responsibilities": "Проведение мероприятий и развлечений"
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 5,
+  "fields": {
+    "name": "Охранник",
+    "responsibilities": "Обеспечение безопасности гостей"
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 6,
+  "fields": {
+    "name": "Массажист",
+    "responsibilities": "Проведение массажных процедур"
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 7,
+  "fields": {
+    "name": "Бармен",
+    "responsibilities": "Обслуживание в баре, приготовление напитков"
+  }
+},
+{
+  "model": "recreation.position",
+  "pk": 8,
+  "fields": {
+    "name": "Экскурсовод",
+    "responsibilities": "Проведение экскурсий по окрестностям"
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 1,
+  "fields": {
+    "house_id": 4,
+    "name": "Ёлки",
+    "slug": "yolki",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 8,
+    "price_per_night": 9000,
+    "description": null,
+    "amenities": null,
+    "image": "yolki.jpg",
+    "is_active": true,
+    "employee_id": 4,
+    "history_date": "2025-06-14T11:06:33.739",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 2,
+  "fields": {
+    "house_id": 1,
+    "name": "Дубовый",
+    "slug": "duboviy",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 2,
+    "price_per_night": 3500,
+    "description": null,
+    "amenities": null,
+    "image": "duboviy.jpg",
+    "is_active": true,
+    "employee_id": 1,
+    "history_date": "2025-06-14T11:06:39.459",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 3,
+  "fields": {
+    "house_id": 6,
+    "name": "Зеленая роща",
+    "slug": "zelenaya-roshcha",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 12,
+    "price_per_night": 15000,
+    "description": null,
+    "amenities": null,
+    "image": "zelenaya-roshcha.jpg",
+    "is_active": true,
+    "employee_id": 6,
+    "history_date": "2025-06-14T11:06:44.021",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 4,
+  "fields": {
+    "house_id": 2,
+    "name": "Сосновый",
+    "slug": "sosnoviy",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 4,
+    "price_per_night": 5000,
+    "description": null,
+    "amenities": null,
+    "image": "sosnoviy.jpg",
+    "is_active": true,
+    "employee_id": 2,
+    "history_date": "2025-06-14T11:06:48.694",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 5,
+  "fields": {
+    "house_id": 4,
+    "name": "Ёлки",
+    "slug": "yolki",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 8,
+    "price_per_night": 8999,
+    "description": null,
+    "amenities": null,
+    "image": "yolki.jpg",
+    "is_active": true,
+    "employee_id": 4,
+    "history_date": "2025-06-15T08:40:32.926",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 6,
+  "fields": {
+    "house_id": 5,
+    "name": "Бао-бао",
+    "slug": "bao-bao",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 20,
+    "price_per_night": 11999,
+    "description": null,
+    "amenities": null,
+    "image": "bao-bao.jpg",
+    "is_active": true,
+    "employee_id": 5,
+    "history_date": "2025-06-15T08:40:32.956",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 7,
+  "fields": {
+    "house_id": 1,
+    "name": "Дубовый",
+    "slug": "duboviy",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 2,
+    "price_per_night": 3499,
+    "description": null,
+    "amenities": null,
+    "image": "duboviy.jpg",
+    "is_active": true,
+    "employee_id": 1,
+    "history_date": "2025-06-15T08:40:32.961",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 8,
+  "fields": {
+    "house_id": 6,
+    "name": "Зеленая роща",
+    "slug": "zelenaya-roshcha",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 12,
+    "price_per_night": 14999,
+    "description": null,
+    "amenities": null,
+    "image": "zelenaya-roshcha.jpg",
+    "is_active": true,
+    "employee_id": 6,
+    "history_date": "2025-06-15T08:40:32.965",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 9,
+  "fields": {
+    "house_id": 2,
+    "name": "Сосновый",
+    "slug": "sosnoviy",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 4,
+    "price_per_night": 4999,
+    "description": null,
+    "amenities": null,
+    "image": "sosnoviy.jpg",
+    "is_active": true,
+    "employee_id": 2,
+    "history_date": "2025-06-15T08:40:32.969",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 10,
+  "fields": {
+    "house_id": 3,
+    "name": "Три берёзы",
+    "slug": "tri-berezy",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 6,
+    "price_per_night": 6999,
+    "description": null,
+    "amenities": null,
+    "image": "houses/tri-berezy_eFokFy7.jpg",
+    "is_active": true,
+    "employee_id": 3,
+    "history_date": "2025-06-15T08:40:32.973",
+    "history_change_reason": null,
+    "history_type": "~",
+    "history_user": null
+  }
+},
+{
+  "model": "recreation.historicalhouse",
+  "pk": 11,
+  "fields": {
+    "house_id": 2,
+    "name": "Сосновый",
+    "slug": "sosnoviy",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 4,
+    "price_per_night": 4999,
+    "description": 

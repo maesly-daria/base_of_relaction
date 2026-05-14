@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ cottage.name }} | База отдыха FurTree</title>
+    {% load static %}
+    <link rel="icon" href="{% static 'images/logotip.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+    <style>
+        :root {
+            --primary-color: #864421;
+            --secondary-color: #f7efe2;
+            --text-color: #333;
+            --light-text: #fff;
+            --dark-brown: #5a2d0c;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .global-stats {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ffc107;
+            display: inline-block;
+        }
+
+        .star-rating .fas.fa-star,
+        .star-rating .fas.fa-star-half-alt {
+            color: #ffc107;
+        }
+
+        .star-rating .far.fa-star {
+            color: #ddd;
+        }
+
+        .review-count {
+            font-size: 16px;
+            color: #666;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        .navbar {
+            background-color: var(--secondary-color) !important;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand img {
+            height: 80px;
+            transition: var(--transition);
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--primary-color) !important;
+            font-weight: 500;
+            font-size: 18px;
+            padding: 10px 15px;
+            transition: var(--transition);
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--dark-brown) !important;
+            transform: translateY(-2px);
+        }
+
+        .navbar-toggler {
+            border-color: var(--primary-color);
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(134, 68, 33, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Cottage Header - ваш оригинальный дизайн */
+        .cottage-header {
+            position: relative;
+            height: 60vh;
+            min-height: 400px;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            padding: 0 20px 50px;
+            color: white;
+            margin-bottom: 50px;
+            background-attachment: local;
+        }
+
+        .cottage-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+        }
+
+        .cottage-title {
+            font-size: 3rem;
+            font-weight: 700;
+            position: relative;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        .cottage-section {
+            padding: 80px 0;
+        }
+
+        .price-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .price {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark-brown);
+            border-color: var(--dark-brown);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .amenities-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .amenities-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 8px;
+        }
+
+        .amenities-list li:before {
+            content: "✓";
+            color: #28a745;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #fff;
+            color: #000;
+            padding: 60px 0 30px;
+            margin-top: 50px;
+        }
+
+        .footer-logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .footer-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .footer-links a {
+            color: #000;
+            display: block;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+            transform: translateX(5px);
+        }
+
+        .map-container {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .map-container iframe {
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 5px;
+            width: 100%;
+            aspect-ratio: 16/9;
+            min-height: 250px;
+        }
+
+        .social-icons a {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-right: 15px;
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover {
+            color: var(--dark-brown);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 20px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .cottage-header {
+                height: 40vh;
+                min-height: 300px;
+            }
+            
+            .cottage-title {
+                font-size: 2rem;
+            }
+            
+            .price-box {
+                position: static;
+                margin-bottom: 30px;
+            }
+            
+            .map-container iframe {
+                height: 200px;
+            }
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
+            </a>
+            <div class="global-stats">
+                <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
+                    {% for i in "12345" %}
+                        {% if global_avg_rating >= forloop.counter %}
+                            <i class="fas fa-star active"></i>
+                        {% elif global_avg_rating|add:-0.5 >= forloop.counter|add:-1 %}
+                            <i class="fas fa-star-half-alt active"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="review-count">({{ global_total_reviews }})</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'post_list' %}">Блог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">🎁 Подобранные пакеты для вас</h2>
+        
+        <div class="row">
+            {% for package in packages %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow">
+                    {% if package.image %}
+                    <img src="{{ package.image.url }}" class="card-img-top" alt="{{ package.name }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ package.name }}</h5>
+                        <p class="card-text">{{ package.description }}</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                🏠 {{ package.base_house.name }} | 
+                                👥 {{ package.min_guests }}-{{ package.max_guests }} гостей | 
+                                🌙 {{ package.duration_days }} ночей
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if is_local %}
+                                <span class="text-decoration-line-through text-muted me-2">{{ package.base_price }} руб.</span>
+                                <span class="h5 text-success">{{ package.final_price|floatformat:0 }} руб.</span>
+                                <small class="text-success">(скидка {{ package.local_discount }}%)</small>
+                                {% else %}
+                                <span class="h5 text-primary">{{ package.base_price }} руб.</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'package_customize' package.package_id %}" class="btn btn-primary">
+                                Выбрать
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    😔 К сожалению, по вашим параметрам пакеты не найдены.
+                    <a href="{% url 'package_builder' %}" class="alert-link">Попробуйте другие параметры</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'package_builder' %}" class="btn btn-outline-secondary">
+                🔄 Назад к конструктору
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
+                    <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
+                    <div class="social-icons mt-4">
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
+                    <h3 class="footer-title">Меню</h3>
+                    <div class="footer-links">
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
+                        <a href="{% url 'all_reviews' %}">Отзывы</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-5 mb-md-0">
+                    <h3 class="footer-title">Контакты</h3>
+                    <div class="footer-links">
+                        <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <h3 class="footer-title">Мы на карте</h3>
+                    <div class="map-container">
+                        <iframe 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
+                            width="100%" 
+                            height="250"
+                            frameborder="0" 
+                            allowfullscreen="true"
+                            style="border: 1px solid #ddd; border-radius: 8px;">
+                        </iframe>
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
+                        target="_blank" 
+                        class="btn btn-sm btn-outline-secondary mt-2 d-block">
+                            Открыть в Яндекс.Картах
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p class="mb-0">© 2025 База отдыха Ёлки. Все права защищены.</p>
+                <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+    $(document).ready(function(){
+        lightbox.option({
+            'resizeDuration': 200,
+            'wrapAround': true,
+            'albumLabel': "Изображение %1 из %2"
+        });
+        
+        $('#bookingModal').on('show.bs.modal', function (event) {
+            var today = new Date().toISOString().split('T')[0];
+            $('#checkinDate').attr('min', today);
+            $('#checkinDate').val(today);
+            
+            $('#checkinDate').change(function() {
+                var checkinDate = new Date($(this).val());
+                checkinDate.setDate(checkinDate.getDate() + 1);
+                var minCheckout = checkinDate.toISOString().split('T')[0];
+                $('#checkoutDate').attr('min', minCheckout);
+                
+                if (!$('#checkoutDate').val() || new Date($('#checkoutDate').val()) < checkinDate) {
+                    $('#checkoutDate').val(minCheckout);
+                }
+            });
+            
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            $('#checkoutDate').val(tomorrow.toISOString().split('T')[0]);
+            $('#checkoutDate').attr('min', tomorrow.toISOString().split('T')[0]);
+        });
+
+        $('#bookingForm').on('submit', function(e) {
+            var checkin = new Date($('#checkinDate').val());
+            var checkout = new Date($('#checkoutDate').val());
+            
+            if (checkout <= checkin) {
+                alert('Дата выезда должна быть позже даты заезда');
+                e.preventDefault();
+                return false;
+            }
+            
+            if ($('#guests').val() < 1 || $('#guests').val() > {{ cottage.capacity }}) {
+                alert('Количество гостей должно быть от 1 до {{ cottage.capacity }}');
+                e.preventDefault();
+                return false;
+            }
+            
+            return true;
+        });
+    });
+    </script>
+</body>
+</html>

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import logging
 from pathlib import Path
 import dj_database_url
 
@@ -28,8 +29,11 @@ SECRET_KEY = "django-insecure-+o)%wo9aq84zi9p@n3w-o(i$5q)76(t%*w6xoqkf@d#5vunr+1
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ALLOWED_HOSTS = ['*', 'idly-shading-matador.ngrok-free.dev']
+CSRF_TRUSTED_ORIGINS = ['https://idly-shading-matador.ngrok-free.dev']
 
-ALLOWED_HOSTS = ["*"]
+YOOKASSA_SHOP_ID = '1356724'
+YOOKASSA_SECRET_KEY = 'test_Dwwl-NBjGpB7OLZzJlwx9h1bxkhJc3wfmGBM6Np-taA'
 
 
 # Application definition
@@ -61,6 +65,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -88,6 +93,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # "recreation.context_processors.password_settings",
             ],
         },
     },
@@ -95,12 +101,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "base_relaction.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    'default': dj_database_url.config(
+        default='postgresql://postgres:postgres@localhost:5432/base_relaction',
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
+
 
 # Переопределение для Docker
 if os.environ.get("DOCKER_CONTAINER"):
@@ -108,12 +122,17 @@ if os.environ.get("DOCKER_CONTAINER"):
         default="postgres://postgres:postgres@db:5432/base_relaction", conn_max_age=600
     )
 # Password validation https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+MIN_LEGTH_PASSWORD_CONSTANT = 8
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", 
+        "OPTIONS": {
+             "min_length": MIN_LEGTH_PASSWORD_CONSTANT,
+        }
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
@@ -122,6 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
 
 # Internationalization https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -176,10 +196,75 @@ TRANSLATABLE_MODEL_MODULES = [
 ]
 
 # Настройки ЮKassa
-YOOKASSA_SHOP_ID = 'your_shop_id'
-YOOKASSA_SECRET_KEY = 'your_secret_key'
-YOOKASSA_RETURN_URL = 'http://yourdomain.com/payment/success/'
+YOOKASSA_SHOP_ID = '1356724'
+YOOKASSA_SECRET_KEY = 'test_Dwwl-NBjGpB7OLZzJlwx9h1bxkhJc3wfmGBM6Np-taA'
+YOOKASSA_RETURN_URL = 'http://idly-shading-matador.ngrok-free.dev/payment/success/'
 
 # Настройки бронирования
 BOOKING_PREPAYMENT_PERCENT = 30  # 30% предоплата
 BOOKING_REFUND_DAYS = 3  # Возврат при отмене за 3+ дней
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+logger = logging.getLogger('django.db.backends')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
+
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Яндекс почта
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = 'dzvaaas@yandex.ru'  # Ваш Яндекс email
+EMAIL_HOST_PASSWORD = 'dbodekwhfgvcogpa'  # Пароль приложения (см. инструкцию ниже)
+DEFAULT_FROM_EMAIL = 'База отдыха "Ёлки" <dzvaaas@yandex.ru>'
+SERVER_EMAIL = 'dzvaaas@yandex.ru'  # Для ошибок
+
+# Получатели ошибок (админы)
+ADMINS = [
+    ('Admin', 'dzvaaas@yandex.ru'),
+    # Можно добавить дополнительные email
+    # ('Manager', 'manager@yolki.ru'),
+]
+
+# # Настройки для разработки/продакшена
+# if DEBUG:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# else:
+#     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Дополнительные настройки email
+EMAIL_TIMEOUT = 30  # Таймаут в секундах
+EMAIL_USE_SSL = False  # Для Яндекс используем TLS, не SSL
+
+# Настройки для улучшения доставки
+EMAIL_SUBJECT_PREFIX = '[Ёлки] '  # Префикс для всех писем
+
+# Настройки кодировки
+DEFAULT_CHARSET = 'utf-8'
+
+# ALLOWED_HOSTS = ['*', 'idly-shading-matador.ngrok-free.dev']  # или конкретно '.ngrok-free.dev', 'localhost', '127.0.0.1']
+# CSRF_TRUSTED_ORIGINS = ['https://idly-shading-matador.ngrok-free.dev']
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

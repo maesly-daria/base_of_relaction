@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>База отдыха FurTree</title>
+    <title>База отдыха «Ёлки» | Отдых на природе</title>
     {% load static %}
     <link rel="icon" href="{% static 'images/logotip.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
     <style>
         .modal.fade .modal-dialog {
             transition: transform 0.3s ease-out;
@@ -50,7 +48,7 @@
 
         .star-rating {
             font-size: 24px;
-            color: #ffc107; /* Золотой цвет звёзд */
+            color: #ffc107;
             display: inline-block;
         }
 
@@ -60,7 +58,7 @@
         }
 
         .star-rating .far.fa-star {
-            color: #ddd; /* Цвет пустых звёзд */
+            color: #ddd;
         }
 
         .review-count {
@@ -69,6 +67,7 @@
             margin-left: 10px;
             vertical-align: middle;
         }
+        
         .navbar {
             background-color: var(--secondary-color) !important;
             padding: 15px 0;
@@ -78,6 +77,10 @@
         .navbar-brand img {
             height: 80px;
             transition: var(--transition);
+        }
+
+        .navbar-brand:hover img {
+            transform: scale(1.05);
         }
 
         .navbar-nav .nav-link {
@@ -154,6 +157,7 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(134, 68, 33, 0.25);
         }
+        
         .booking-form {
             background-color: rgba(255, 255, 255, 0.9);
             padding: 30px;
@@ -182,52 +186,11 @@
             box-shadow: 0 0 0 0.2rem rgba(134, 68, 33, 0.25);
         }
 
-        /* Datepicker */
-        .datepicker {
-            border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .datepicker table tr td.active.active,
-        .datepicker table tr td.active:hover.active {
-            background-color: var(--primary-color);
-        }
-        
-        .datepicker table tr td.today {
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
-        }
-
-        /* Guest Counter */
-        .guest-counter {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 0 10px;
-            height: 50px;
-            background-color: white;
-        }
-        
-        .guest-counter button {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: var(--primary-color);
-            cursor: pointer;
-            padding: 0 10px;
-        }
-        
-        .guest-counter input {
-            border: none;
-            text-align: center;
-            width: 40px;
-            font-size: 16px;
-        }
-        
-        .guest-counter input:focus {
-            outline: none;
+        /* Стили для ошибок дат */
+        .date-error {
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
         }
 
         /* Buttons */
@@ -248,17 +211,10 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-light:hover {
-            background-color: var(--dark-brown);
-            border-color: var(--dark-brown);
-            color: #f7efe2;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
         /* Sections */
         .section {
             padding: 80px 0;
+            background-color: var(--secondary-color);
         }
 
         .section-title {
@@ -329,6 +285,7 @@
             flex-direction: column;
             gap: 10px;
         }
+        
         .service-widget.premium {
             border: 2px solid gold;
             position: relative;
@@ -354,6 +311,7 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
+        
         /* Стили для виджетов услуг */
         .service-widget {
             cursor: pointer;
@@ -382,39 +340,6 @@
             overflow-y: auto;
             padding-right: 10px;
         }
-
-        /* Адаптация для мобильных */
-        @media (max-width: 768px) {
-            .service-widget {
-                padding: 15px;
-            }
-        }
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #4a7c59;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: #6d361a;
-            border-color: #6d361a;
-        }
-
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
 
         /* Features */
         .feature-box {
@@ -445,92 +370,71 @@
         }
 
         /* Testimonials */
-
         .rating {
             margin-top: 10px;
             font-size: 18px;
         }
 
         .testimonials-section {
-            background-color: #f7efe2;
+            background-color: var(--secondary-color);
             padding: 80px 0;
         }
         
         .testimonial-slider {
-            max-width: 800px;
-            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
         }
-        
+
         .testimonial-item {
-            padding: 30px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin: 0 15px;
-            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(134, 68, 33, 0.1);
+        }
+
+        .testimonial-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .testimonial-content {
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+        }
+
+        .rating .fas.fa-star.active {
+            color: #ffc107;
         }
 
         .testimonial-text {
-            font-size: 18px;
-            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #555;
             margin-bottom: 20px;
-            position: relative;
-            padding: 0 20px;
             flex-grow: 1;
-        }
-        
-        .testimonial-text:before,
-        .testimonial-text:after {
-            content: '"';
-            font-size: 40px;
-            color: var(--primary-color);
-            opacity: 0.3;
-            position: absolute;
-        }
-        
-        .testimonial-text:before {
-            top: -15px;
-            left: 0;
-        }
-        
-        .testimonial-text:after {
-            bottom: -30px;
-            right: 0;
-        }
-
-        .testimonial-author .text-muted {
-            font-size: 0.8em;
-            margin-left: 5px;
+            font-style: italic;
         }
 
         .testimonial-author {
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-top: 20px;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
         }
-        
-        .slick-dots {
-            bottom: -40px;
+
+        /* Footer phone alignment */
+        .footer-links p {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
         }
-        
-        .slick-dots li button:before {
-            font-size: 12px;
-            color: var(--primary-color);
-        }
-        
-        .slick-dots li.slick-active button:before {
-            color: var(--primary-color);
-            opacity: 1;
-        }
-        
-        .slick-prev:before,
-        .slick-next:before {
-            color: var(--primary-color);
-            font-size: 30px;
+
+        .footer-links i {
+            margin-top: 2px;
         }
 
         /* Contact Form */
@@ -549,8 +453,8 @@
             height: 50px;
         }
 
-        .btn-light: hover {
-            background-color: var();
+        .btn-light:hover {
+            background-color: var(--dark-brown);
             color: #f7efe2;
         }
         
@@ -566,10 +470,20 @@
             margin-bottom: 20px;
         }
 
+        .footer a:has(.footer-logo) {
+            display: inline-block;
+            transition: var(--transition);
+        }
+        
+        .footer a:has(.footer-logo):hover {
+            transform: scale(1.05);
+        }
+
         .footer-title {
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .footer-links a {
@@ -619,18 +533,79 @@
             min-height: 250px;
         }
 
-        /* Адаптация для мобильных */
-        @media (max-width: 768px) {
-            .map-container iframe {
-                height: 200px;
-            }
+        /* Special Offer Section */
+        .special-offer-section {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #f8f4eb 100%);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Кнопка "Открыть в Яндекс.Картах" */
-        .map-container .btn {
-            width: 100%;
-            padding: 5px 10px;
-            font-size: 14px;
+        .offer-image-container {
+            position: relative;
+        }
+
+        .offer-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            z-index: 2;
+        }
+
+        .offer-image {
+            transition: transform 0.3s ease;
+            border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .offer-image:hover {
+            transform: scale(1.02);
+        }
+
+        .offer-content h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        .offer-features {
+            margin: 25px 0;
+        }
+
+        .offer-text {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .offer-note {
+            background: rgba(134, 68, 33, 0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+
+        /* Service Modal Note */
+        .service-note {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-style: italic;
+            margin-top: 1rem;
+            border-top: 1px solid #dee2e6;
+            padding-top: 0.5rem;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background-color: var(--secondary-color);
+            padding: 80px 0;
         }
 
         /* Responsive */
@@ -668,8 +643,13 @@
             .booking-form .col-md-3 {
                 margin-bottom: 15px;
             }
+            
             .map-container iframe {
                 height: 250px;
+            }
+            
+            .special-offer-section {
+                padding: 60px 0;
             }
         }
 
@@ -685,15 +665,20 @@
             .btn-primary {
                 width: 100%;
             }
+            
+            .offer-badge {
+                font-size: 0.9rem;
+                padding: 6px 15px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-     <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
             </a>
             <div class="global-stats">
                 <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
@@ -709,16 +694,16 @@
                     <span class="review-count">({{ global_total_reviews }})</span>
                 </div>
             </div>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cottages' %}">Коттеджи</a>
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
@@ -729,6 +714,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -737,19 +725,21 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-content">
-            <h1 class="hero-title">База отдыха «FurTree»</h1>
-            <p class="hero-subtitle">Позвольте себе настоящий отдых</p>
+            <h1 class="hero-title">База отдыха «Ёлки»</h1>
+            <p class="hero-subtitle">Позвольте себе настоящий отдых на природе</p>
             <div class="booking-form">
-                <h3 class="booking-title">БРОНИРОВАНИЕ КОТТЕДЖА</h3>
-                <form method="GET" action="{% url 'cottages' %}">
+                <h3 class="booking-title">БРОНИРОВАНИЕ ДОМА ДЛЯ ОТДЫХА</h3>
+                <form method="GET" action="{% url 'cottages' %}" id="heroBookingForm">
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label>Дата заезда</label>
                             <input type="date" class="form-control" name="check_in" id="checkinDate" required>
+                            <small class="text-danger date-error" style="display: none;">Обязательно к заполнению</small>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label>Дата выезда</label>
                             <input type="date" class="form-control" name="check_out" id="checkoutDate" required>
+                            <small class="text-danger date-error" style="display: none;">Обязательно к заполнению</small>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label>Гости</label>
@@ -766,7 +756,7 @@
                             </select>
                         </div>
                         <div class="col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary btn-block">Найти коттеджи</button>
+                            <button type="submit" class="btn btn-primary btn-block">Найти дома</button>
                         </div>
                     </div>
                 </form>
@@ -777,16 +767,17 @@
     <!-- Cottages Section -->
     <section class="section">
         <div class="container">
-            <h2 class="section-title">Наши коттеджи</h2>
+            <h2 class="section-title">Наши дома для отдыха</h2>
             <div class="row">
                 {% for cottage in cottages %}
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="cottage-card">
                         <div class="cottage-img-container">
-                            <img src="../static/images/{{ cottage.obj.slug }}.jpg" 
+                            <img src="{% if cottage.obj.image %}{{ cottage.obj.image.url }}{% else %}{% static 'images/no-image.svg' %}{% endif %}" 
                                 class="cottage-img" 
                                 alt="{{ cottage.obj.name }}"
-                                onerror="this.onerror=null;this.src='{% static 'images/no-image.jpg' %}'">
+                                loading="lazy"
+                                onerror="this.onerror=null;this.src='{% static 'images/no-image.svg' %}'">
                         </div>
                         <div class="cottage-body">
                             <h3 class="cottage-title">{{ cottage.obj.name }}</h3>
@@ -806,7 +797,7 @@
                 {% empty %}
                 <div class="col-12">
                     <div class="alert alert-info text-center">
-                        В данный момент нет доступных коттеджей. Пожалуйста, проверьте позже.
+                        В данный момент нет доступных домов. Пожалуйста, проверьте позже.
                     </div>
                 </div>
                 {% endfor %}
@@ -814,55 +805,45 @@
         </div>
     </section>
 
-    <!-- Модальное окно для услуг -->
-    <div class="modal fade" id="serviceModal" tabindex="-1" role="dialog" aria-labelledby="serviceModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="serviceModalLabel">Информация об услуге</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Контент будет загружен через JavaScript -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Special Offer Section -->
+    <!-- Special Offer Section - новое оформление -->
     <section class="section">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
-                    <img src="{% static 'images/yolki-chan.jpg' %}" alt="Банный чан" class="img-fluid rounded shadow">
+                    <div class="offer-image-container">
+                        <img src="{% static 'images/yolki-chan.jpg' %}" alt="Банный чан" class="img-fluid rounded shadow offer-image">
+                        <div class="offer-badge">Новинка!</div>
+                    </div>
                 </div>
                 <div class="col-lg-6">
-                    <h2 class="mb-4">Согревающая новость!</h2>
-                    <p class="lead mb-4">В домах "Ёлки" и "Бао-бао" появились чаны для купания.</p>
-                    <p class="mb-4">Представьте себе это удовольствие! Погрузиться в теплую воду на свежем воздухе среди вековых лесов, угощаться вкусностями и слушать пение птиц!</p>
-                    <p class="mb-5">Великолепный вариант для романтических выходных или для расслабляющей поездки с друзьями.</p>
-                    <button class="btn btn-primary">Забронировать банный чан</button>
+                    <div class="offer-content">
+                        <h2 class="mb-3">Согревающая новость!</h2>
+                        <div class="offer-features">
+                            <p class="offer-text"><i class="fas fa-check-circle text-success mr-2"></i>В домах "Ёлки" и "Бао-бао" появились чаны для купания</p>
+                            <p class="offer-text"><i class="fas fa-check-circle text-success mr-2"></i>Новое оформление - 100 уточек 🐥 + пена 🫧</p>
+                            <p class="offer-text"><i class="fas fa-check-circle text-success mr-2"></i>Понравится и детям, и взрослым</p>
+                            <p class="offer-text"><i class="fas fa-check-circle text-success mr-2"></i>Сочные фото вам обеспечены 👌</p>
+                        </div>
+                        <div class="offer-note mt-4 p-3 rounded">
+                            <small class="text-muted"><i class="fas fa-info-circle mr-2"></i>Банный чан бронируется при заказе домика</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- About Section -->
-    <section class="section bg">
+    <section class="section">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
                     <div class="row">
                         <div class="col-6">
-                            <img src="{% static 'images/naberezhnaya.jpg' %}" alt="Набережная" class="img-fluid mb-3 rounded shadow" style="transform: rotate(-5deg);">
+                            <img src="{% static 'images/domik-1-dnem.jpg' %}" alt="Набережная" class="img-fluid mb-3 rounded shadow" style="transform: rotate(-5deg);">
                         </div>
                         <div class="col-6">
-                            <img src="{% static 'images/spa-banya-smak.jpg' %}" alt="Спа-баня" class="img-fluid mb-3 rounded shadow" style="transform: rotate(5deg);">
+                            <img src="/static/images/chan-s-boku.jpg" alt="Чан" class="img-fluid mb-3 rounded shadow" style="transform: rotate(5deg);">
                         </div>
                     </div>
                 </div>
@@ -875,27 +856,33 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials-section">
+    <section class="section">
         <div class="container">
             <h2 class="section-title">Отзывы наших гостей</h2>
             
             <div class="testimonial-slider">
                 {% for review in reviews %}
                 <div class="testimonial-item">
-                    <p class="testimonial-text">{{ review.comment|striptags }}</p>
-                    <p class="testimonial-author">
-                        - {{ review.client_id.last_name }} {{ review.client_id.first_name.0 }}.
-                        <span class="text-muted small">{{ review.created_at|date:"d.m.Y" }}</span>
-                    </p>
-                    <div class="rating">
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= review.rating %}
-                                <i class="fas fa-star text-warning"></i>
-                            {% else %}
-                                <i class="far fa-star text-warning"></i>
-                            {% endif %}
-                        {% endfor %}
+                    <div class="testimonial-content">
+                        <div class="rating mb-3">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star active"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p class="testimonial-text">"{{ review.comment|striptags }}"</p>
+                        <div class="testimonial-author">
+                            <strong>{{ review.client_id.last_name }} {{ review.client_id.first_name }}</strong>
+                            <span class="text-muted">• {{ review.created_at|date:"d.m.Y" }}</span>
+                        </div>
                     </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">Пока нет отзывов. Будьте первым!</p>
                 </div>
                 {% endfor %}
             </div>
@@ -907,7 +894,7 @@
     </section>
 
     <!-- Services Section -->
-    <section class="section bg">
+    <section class="section">
         <div class="container">
             <h2 class="section-title">Услуги и развлечения</h2>
             
@@ -951,6 +938,7 @@
                     <!-- Контент будет загружен через AJAX -->
                 </div>
                 <div class="modal-footer">
+                    <p class="service-note mr-auto">* услуги оформляются при бронировании домика</p>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
                 </div>
             </div>
@@ -964,20 +952,20 @@
             
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <img src="{% static 'images/chan.jpg' %}" alt="Чан" class="img-fluid rounded shadow-lg" style="transform: rotate(5deg);">
+                    <img src="{% static 'images/kruzhki-s-chaem.jpg' %}" alt="Чан" class="img-fluid rounded shadow-lg" style="transform: rotate(5deg);">
                 </div>
                 <div class="col-md-4 mb-4">
-                    <img src="{% static 'images/bao-bao.jpg' %}" alt="Бао-бао" class="img-fluid rounded shadow-lg" style="transform: rotate(-3deg);">
+                    <img src="{% static 'images/chan.jpg' %}" alt="Бао-бао" class="img-fluid rounded shadow-lg" style="transform: rotate(-3deg);">
                 </div>
                 <div class="col-md-4 mb-4">
-                    <img src="{% static 'images/chan-u-reki.jpg' %}" alt="Чан у реки" class="img-fluid rounded shadow-lg" style="transform: rotate(2deg);">
+                    <img src="{% static 'images/photo_5_2025-05-06_12-59-04.jpg' %}" alt="Чан у реки" class="img-fluid rounded shadow-lg" style="transform: rotate(2deg);">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section class="section text-white">
+    <section class="contact-section">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
@@ -985,14 +973,17 @@
                         <h2 class="text-center mb-4">Давайте обсудим ваш отдых</h2>
                         <p class="text-center mb-5">Оставьте Ваш номер телефона, и мы перезвоним, чтобы ответить на все вопросы и помочь с бронированием</p>
                         
-                        <form>
+                        <form id="contactForm">
                             <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Ваше имя">
+                                <input type="text" class="form-control" placeholder="Ваше имя" required>
                             </div>
                             <div class="form-group">
-                                <input type="tel" class="form-control" placeholder="+7 (999) 999-99-99">
+                                <input type="tel" class="form-control" placeholder="+7 (999) 999-99-99" required pattern="\+7\s?[\(]{0,1}9[0-9]{2}[\)]{0,1}\s?\d{3}[-]{0,1}\d{2}[-]{0,1}\d{2}">
                             </div>
-                            <button type="submit" class="btn btn-light btn-block">Оставить заявку</button>
+                            <button type="submit" class="btn btn-primary btn-block">Оставить заявку</button>
+                            <p class="text-muted small mt-3 text-center">
+                                Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
+                            </p>
                         </form>
                     </div>
                 </div>
@@ -1005,23 +996,29 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
-                    <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
                     <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="#">Главная</a>
-                        <a href="{% url 'cottages' %}">Коттеджи</a>
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
                         <a href="{% url 'all_reviews' %}">Отзывы</a>
-                        <a href="#">О нас</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
                     </div>
                 </div>
                 
@@ -1029,8 +1026,12 @@
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
                         <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
                     </div>
                 </div>
                 
@@ -1038,14 +1039,14 @@
                     <h3 class="footer-title">Мы на карте</h3>
                     <div class="map-container">
                         <iframe 
-                            src="https://yandex.ru/map-widget/v1/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                             width="100%" 
                             height="250"
                             frameborder="0" 
                             allowfullscreen="true"
-                            style="border: 1px solid #ddd; border-radius: 4px;">
+                            style="border: 1px solid #ddd; border-radius: 8px;">
                         </iframe>
-                        <a href="https://yandex.ru/maps/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                         target="_blank" 
                         class="btn btn-sm btn-outline-secondary mt-2 d-block">
                             Открыть в Яндекс.Картах
@@ -1055,108 +1056,46 @@
             </div>
             
             <div class="copyright">
-                <p class="mb-0">© 2025 База отдыха FurTree. Все права защищены.</p>
+                <p class="mb-0">© 2026 База отдыха Ёлки. Все права защищены.</p>
                 <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
             </div>
         </div>
     </footer>
-    
-    <!-- Подключение библиотек в правильном порядке -->
+
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ru.min.js"></script>
 
     <script>
     $(document).ready(function() {
-        // Установка минимальных дат
-        const today = new Date().toISOString().split('T')[0];
-        $('#checkinDate').attr('min', today);
-        
-        // При изменении даты заезда устанавливаем минимальную дату выезда
-        $('#checkinDate').change(function() {
-            const checkinDate = new Date($(this).val());
-            checkinDate.setDate(checkinDate.getDate() + 1);
-            const minCheckout = checkinDate.toISOString().split('T')[0];
-            $('#checkoutDate').attr('min', minCheckout);
+        // Валидация формы бронирования
+        $('#heroBookingForm').on('submit', function(e) {
+            let valid = true;
+            $('.date-error').hide();
             
-            // Если текущая дата выезда раньше новой минимальной, сбрасываем её
-            if ($('#checkoutDate').val() && new Date($('#checkoutDate').val()) < checkinDate) {
-                $('#checkoutDate').val('');
+            const checkin = $('#checkinDate').val();
+            const checkout = $('#checkoutDate').val();
+            
+            if (!checkin) {
+                $('#checkinDate').siblings('.date-error').show();
+                valid = false;
             }
-        });
-
-        // Обработчик для модального окна коттеджей
-        $('.cottage-modal-btn').click(function() {
-            const $button = $(this);
-            const slug = $button.data('slug');
             
-            // Показываем спиннер загрузки
-            $('#cottageModal .modal-body').html('<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-3x"></i></div>');
+            if (!checkout) {
+                $('#checkoutDate').siblings('.date-error').show();
+                valid = false;
+            }
             
-            // Делаем AJAX запрос
-            $.ajax({
-                url: '/cottages/' + slug + '/modal/',
-                method: 'GET',
-                success: function(data) {
-                    // Заполняем модальное окно данными
-                    $('#cottageModalLabel').text(data.name || 'Название не указано');
-                    $('#cottageModalCapacity').text(data.capacity || '—');
-                    $('#cottageModalPrice').text((data.price_per_night || '—') + ' руб./сут.');
-                    
-                    // Устанавливаем изображение с обработкой ошибок
-                    const img = new Image();
-                    img.src = data.image_url || '/static/images/image.jpg';
-                    img.onerror = function() {
-                        this.src = '/static/images/no-image.jpg';
-                    };
-                    $('#cottageModalImage').attr('src', img.src)
-                        .attr('alt', data.name || 'Коттедж');
-                    
-                    // Описание
-                    $('#cottageModalDescription').html(
-                        data.description ? 
-                        data.description.replace(/\n/g, '<br>') : 
-                        'Описание отсутствует'
-                    );
-                    
-                    // Удобства
-                    const amenitiesDiv = $('#cottageModalAmenities');
-                    amenitiesDiv.empty();
-                    
-                    if (data.amenities) {
-                        const amenitiesList = $('<ul class="list-unstyled"></ul>');
-                        const amenitiesArray = data.amenities.split('\n');
-                        
-                        $.each(amenitiesArray, function(index, item) {
-                            const amenity = item.trim();
-                            if (amenity) {
-                                amenitiesList.append(
-                                    `<li><i class="fas fa-check text-success mr-2"></i>${amenity}</li>`
-                                );
-                            }
-                        });
-                        
-                        amenitiesDiv.append(amenitiesList.length ? amenitiesList : '<p><em>Удобства не указаны</em></p>');
-                    } else {
-                        amenitiesDiv.html('<p><em>Удобства не указаны</em></p>');
-                    }
-
-                    // Ссылка "Все подробности"
-                    if (slug) {
-                        $('#cottageModalLink').attr('href', '/cottages/' + slug + '/').show();
-                    } else {
-                        $('#cottageModalLink').hide();
-                    }
-                },
-                error: function() {
-                    $('#cottageModal .modal-body').html(
-                        '<div class="alert alert-danger">Не удалось загрузить данные о коттедже</div>'
-                    );
-                }
-            });
+            if (checkin && checkout && new Date(checkout) <= new Date(checkin)) {
+                alert('Дата выезда должна быть позже даты заезда');
+                valid = false;
+            }
+            
+            if (!valid) {
+                e.preventDefault();
+            }
         });
 
         // Обработчик для модального окна услуг
@@ -1164,10 +1103,8 @@
             const serviceId = $(this).data('service-id');
             const modal = $('#serviceModal');
             
-            // Показываем модальное окно сразу
             modal.modal('show');
             
-            // Устанавливаем спиннер загрузки
             modal.find('.modal-body').html(`
                 <div class="text-center py-4">
                     <i class="fas fa-spinner fa-spin fa-3x"></i>
@@ -1175,36 +1112,33 @@
                 </div>
             `);
             
-            // Делаем AJAX запрос
             $.ajax({
-                url: `/api/services/${serviceId ? serviceId : 0}/`,  // Используем правильный endpoint
+                url: `/api/services/${serviceId}/`,
                 method: 'GET',
                 success: function(data) {
-                    // Формируем HTML контент
                     const content = `
                         <div class="row">
                             <div class="col-md-5 text-center">
-                                <img src="${data.image_url}" 
+                                <img src="${data.image_url || '{% static 'images/no-image.svg' %}'}" 
                                     class="img-fluid rounded mb-3" 
                                     alt="${data.name}"
-                                    onerror="this.onerror=null;this.src='{% static 'images/no-image.jpg' %}'">
+                                    style="max-height: 200px; object-fit: cover; width: 100%;">
                                 <div class="mt-3">
                                     <i class="fas ${data.icon} fa-2x text-primary"></i>
                                     <span class="ml-2">${data.type}</span>
                                 </div>
                                 <div class="price-display mt-2">
-                                    <span class="price">${data.price} руб.</span>
+                                    <span class="h4 text-primary">${data.price} руб.</span>
                                 </div>
                             </div>
                             <div class="col-md-7">
                                 <h4>${data.name}</h4>
                                 <hr>
-                                <div class="service-description">${data.description}</div>
+                                <div class="service-description">${data.description || 'Описание отсутствует'}</div>
                             </div>
                         </div>
                     `;
                     
-                    // Вставляем контент в модальное окно
                     modal.find('.modal-body').html(content);
                     modal.find('.modal-title').text(data.name);
                 },
@@ -1219,38 +1153,6 @@
             });
         });
 
-        // Инициализация счетчика гостей
-        $('.increment-btn').click(function() {
-            const input = $(this).siblings('.guest-count');
-            let value = parseInt(input.val());
-            if (value < 20) {
-                input.val(value + 1);
-                updateGuestText(value + 1);
-            }
-        });
-        
-        $('.decrement-btn').click(function() {
-            const input = $(this).siblings('.guest-count');
-            let value = parseInt(input.val());
-            if (value > 1) {
-                input.val(value - 1);
-                updateGuestText(value - 1);
-            }
-        });
-
-        // Функция обновления текста для количества гостей
-        function updateGuestText(count) {
-            let text;
-            if (count % 10 === 1 && count % 100 !== 11) {
-                text = 'гость';
-            } else if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
-                text = 'гостя';
-            } else {
-                text = 'гостей';
-            }
-            $('.guest-text').text(text);
-        }
-
         // Инициализация слайдера отзывов
         $('.testimonial-slider').slick({
             dots: true,
@@ -1262,100 +1164,27 @@
             autoplaySpeed: 5000,
             arrows: true,
             prevArrow: '<button type="button" class="slick-prev"><i class="fas fa-chevron-left"></i></button>',
-            nextArrow: '<button type="button" class="slick-next"><i class="fas fa-chevron-right"></i></button>',
-            responsive: [{
-                breakpoint: 768,
-                settings: {
-                    arrows: false
-                }
-            }]
+            nextArrow: '<button type="button" class="slick-next"><i class="fas fa-chevron-right"></i></button>'
         });
 
-        // Плавная прокрутка для якорных ссылок
-        $('a[href^="#"]').on('click', function(event) {
-            const target = $(this.getAttribute('href'));
-            if (target.length) {
-                event.preventDefault();
-                $('html, body').stop().animate({
-                    scrollTop: target.offset().top - 70
-                }, 1000);
-            }
+        // Обработчик формы обратной связи
+        $('#contactForm').on('submit', function(e) {
+            e.preventDefault();
+            alert('Спасибо за заявку! Мы свяжемся с вами в ближайшее время.');
+            this.reset();
         });
 
-        // Фиксированная шапка при прокрутке
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 100) {
-                $('.navbar').addClass('fixed-top shadow-sm');
-                $('body').css('padding-top', $('.navbar').outerHeight() + 'px');
-            } else {
-                $('.navbar').removeClass('fixed-top shadow-sm');
-                $('body').css('padding-top', '0');
-            }
-        });
-
-        // Инициализация выбора дат
-        $('#checkin-datepicker').datepicker({
-            format: 'dd.mm.yyyy',
-            language: 'ru',
-            autoclose: true,
-            todayHighlight: true,
-            startDate: '0d'
-        });
+        // Установка минимальных дат
+        const today = new Date().toISOString().split('T')[0];
+        $('#checkinDate').attr('min', today);
         
-        $('#checkout-datepicker').datepicker({
-            format: 'dd.mm.yyyy',
-            language: 'ru',
-            autoclose: true,
-            todayHighlight: true,
-            startDate: '+1d'
-        });
-        
-        $('#checkin-datepicker').on('changeDate', function(e) {
-            const checkinDate = e.date;
+        $('#checkinDate').change(function() {
+            const checkinDate = new Date($(this).val());
             checkinDate.setDate(checkinDate.getDate() + 1);
-            $('#checkout-datepicker').datepicker('setStartDate', checkinDate);
+            const minCheckout = checkinDate.toISOString().split('T')[0];
+            $('#checkoutDate').attr('min', minCheckout);
         });
     });
-
-    // Проверка загрузки изображений
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.cottage-img').forEach(img => {
-            img.onerror = function() {
-                this.src = '/static/images/no-image.jpg';
-            };
-        });
-        
-        // Добавляем обработчик ошибок для изображений услуг
-        document.querySelectorAll('.service-img').forEach(img => {
-            img.onerror = function() {
-                this.src = '/static/images/no-image.jpg';
-            };
-        });
-    });
-
-    function setBookingDates() {
-        const checkIn = document.querySelector('input[name="check_in"]').value;
-        const checkOut = document.querySelector('input[name="check_out"]').value;
-        const guests = document.querySelector('input[name="guests"]').value;
-        
-        if (checkIn && checkOut) {
-            const bookBtn = document.querySelector('.btn-primary[data-target="#cottageModal"]');
-            const slug = bookBtn.getAttribute('data-slug');
-            bookBtn.setAttribute('onclick', `window.location.href='/booking/?house=${slug}&check_in=${checkIn}&check_out=${checkOut}&guests=${guests}'`);
-        }
-    }
-    {% if debug %}
-        console.log("Debug information:");
-        {% for cottage in cottages %}
-        console.log("Cottage: {{ cottage.obj.name }}");
-        console.log("Image URL: {{ cottage.image_url }}");
-        console.log("Image exists: {{ cottage.image_exists }}");
-        {% endfor %}
-        {% for service in services %}
-        console.log("Service: {{ service.name }}");
-        console.log("Type: {{ service.type }}");
-        {% endfor %}
-    {% endif %}
     </script>
 </body>
 </html>

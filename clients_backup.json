@@ -1,0 +1,314 @@
+[
+{
+  "model": "recreation.client",
+  "pk": 1,
+  "fields": {
+    "user": null,
+    "last_name": "Иванов",
+    "first_name": "Алексей",
+    "patronymic": "Игоревич",
+    "phone_number": "+79120000001",
+    "email": "ivanov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 2,
+  "fields": {
+    "user": null,
+    "last_name": "Петрова",
+    "first_name": "Мария",
+    "patronymic": "Сергеевна",
+    "phone_number": "+79120000002",
+    "email": "petrova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 3,
+  "fields": {
+    "user": null,
+    "last_name": "Сидоров",
+    "first_name": "Дмитрий",
+    "patronymic": "Алексеевич",
+    "phone_number": "+79120000003",
+    "email": "sidorov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 4,
+  "fields": {
+    "user": null,
+    "last_name": "Кузнецова",
+    "first_name": "Анна",
+    "patronymic": "Дмитриевна",
+    "phone_number": "+79120000004",
+    "email": "kuznetsova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 5,
+  "fields": {
+    "user": null,
+    "last_name": "Смирнов",
+    "first_name": "Иван",
+    "patronymic": "Петрович",
+    "phone_number": "+79120000005",
+    "email": "smirnov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 6,
+  "fields": {
+    "user": null,
+    "last_name": "Васильева",
+    "first_name": "Елена",
+    "patronymic": "Ивановна",
+    "phone_number": "+79120000006",
+    "email": "vasileva@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 7,
+  "fields": {
+    "user": null,
+    "last_name": "Николаев",
+    "first_name": "Андрей",
+    "patronymic": "Викторович",
+    "phone_number": "+79120000007",
+    "email": "nikolaev@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 8,
+  "fields": {
+    "user": null,
+    "last_name": "Орлова",
+    "first_name": "Виктория",
+    "patronymic": "Александровна",
+    "phone_number": "+79120000008",
+    "email": "orlova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 9,
+  "fields": {
+    "user": null,
+    "last_name": "Федоров",
+    "first_name": "Сергей",
+    "patronymic": "Николаевич",
+    "phone_number": "+79120000009",
+    "email": "fedorov@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 10,
+  "fields": {
+    "user": null,
+    "last_name": "Жукова",
+    "first_name": "Ольга",
+    "patronymic": "Сергеевна",
+    "phone_number": "+79120000010",
+    "email": "zhukova@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 11,
+  "fields": {
+    "user": 1,
+    "last_name": "Змеева",
+    "first_name": "Дарья",
+    "patronymic": "Васильевна",
+    "phone_number": "+79026458366",
+    "email": "2005.zmeeva@bk.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 15,
+  "fields": {
+    "user": 5,
+    "last_name": "Змеева",
+    "first_name": "Елена",
+    "patronymic": "Владимировна",
+    "phone_number": "+79082480417",
+    "email": "anelaz@rambler.ru",
+    "document": "client_documents/2025/05/22/photo_2025-02-10_02-48-19.jpg"
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 16,
+  "fields": {
+    "user": 4,
+    "last_name": "Ким",
+    "first_name": "Виктория",
+    "patronymic": "Владимировна",
+    "phone_number": "+79929929292",
+    "email": "kim@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 17,
+  "fields": {
+    "user": 11,
+    "last_name": "Бегунов",
+    "first_name": "Динар",
+    "patronymic": "Альбертович",
+    "phone_number": "+79025453242",
+    "email": "begunovda@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 18,
+  "fields": {
+    "user": 12,
+    "last_name": "Бабушкина",
+    "first_name": "Алиса",
+    "patronymic": "Евгеньевна",
+    "phone_number": "+79324438471",
+    "email": "babushkinaae@mail.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 19,
+  "fields": {
+    "user": 14,
+    "last_name": "Журавлёв",
+    "first_name": "Дмитрий",
+    "patronymic": "Славянович",
+    "phone_number": "+79777232382",
+    "email": "zhuravlevds@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 20,
+  "fields": {
+    "user": 13,
+    "last_name": "Adminov",
+    "first_name": "Admin",
+    "patronymic": "Adminovich",
+    "phone_number": "+79999999999",
+    "email": "admin@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 21,
+  "fields": {
+    "user": 15,
+    "last_name": "Гудков",
+    "first_name": "Олег",
+    "patronymic": "Анатольевич",
+    "phone_number": "+79032323923",
+    "email": "olezhka@gudkov.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 22,
+  "fields": {
+    "user": 16,
+    "last_name": "Московский",
+    "first_name": "Москвитий",
+    "patronymic": "Москович",
+    "phone_number": "+79777777777",
+    "email": "moskovskiymm@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 23,
+  "fields": {
+    "user": null,
+    "last_name": "Временный",
+    "first_name": "Клиент",
+    "patronymic": "Для бронирований",
+    "phone_number": "+70000000000",
+    "email": "temp@example.com",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 24,
+  "fields": {
+    "user": 17,
+    "last_name": "Жуков",
+    "first_name": "Сергей",
+    "patronymic": "Сергеевич",
+    "phone_number": "+79773422434",
+    "email": "zhukov@serg.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 25,
+  "fields": {
+    "user": 18,
+    "last_name": "Киркоров",
+    "first_name": "Филипп",
+    "patronymic": "Филиппович",
+    "phone_number": "+79028349384",
+    "email": "kirkorov@filipp.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 26,
+  "fields": {
+    "user": 19,
+    "last_name": "Иванов",
+    "first_name": "Иван",
+    "patronymic": "Иванович",
+    "phone_number": "+79934354343",
+    "email": "ivanov@ivan.ru",
+    "document": ""
+  }
+},
+{
+  "model": "recreation.client",
+  "pk": 27,
+  "fields": {
+    "user": 20,
+    "last_name": "Иванов",
+    "first_name": "Иван",
+    "patronymic": "Иванович",
+    "phone_number": "+79867678999",
+    "email": "ivan@ivanich.ru",
+    "document": ""
+  }
+}
+]

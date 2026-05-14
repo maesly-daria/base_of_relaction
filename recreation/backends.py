@@ -1,16 +1,18 @@
 from django.contrib.auth.backends import ModelBackend
-
-from .models import CustomUser, models
-
+from django.db.models import Q  # ДОБАВЬТЕ этот импорт
+from .models import CustomUser
 
 class EmailPhoneBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
-            # Пробуем найти по email или телефону
+            # Используем Q для поиска по email или phone
             user = CustomUser.objects.get(
-                models.Q(email=username) | models.Q(phone=username)
+                Q(email=username) | Q(phone=username)
             )
             if user.check_password(password):
                 return user
         except CustomUser.DoesNotExist:
+            return None
+        except CustomUser.MultipleObjectsReturned:
+            # Если найдено несколько пользователей, вернем None
             return None

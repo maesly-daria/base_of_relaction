@@ -18,3 +18,7 @@ admin_instance = PostAdmin(Post, admin.site)
 urlpatterns.append(
     path("admin/print_post/<int:id>/", admin_instance.print_post, name="print_post")
 )
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

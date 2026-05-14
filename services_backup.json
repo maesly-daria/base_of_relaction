@@ -1,0 +1,7 @@
+[
+{
+  "model": "recreation.service",
+  "pk": 1,
+  "fields": {
+    "name": "Банный чан",
+    "description": 

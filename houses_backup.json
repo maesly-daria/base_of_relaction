@@ -1,0 +1,12 @@
+[
+{
+  "model": "recreation.house",
+  "pk": 1,
+  "fields": {
+    "employee_id": 1,
+    "name": "Дубовый",
+    "slug": "duboviy",
+    "location": "Свердловская область, д. Савина",
+    "capacity": 2,
+    "price_per_night": 3499,
+    "description": 

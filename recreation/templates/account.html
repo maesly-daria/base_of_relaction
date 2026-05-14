@@ -12,16 +12,17 @@
         :root {
             --primary-color: #864421;
             --secondary-color: #f7efe2;
-            --light-gray: #f8f9fa;
+            --light: #f8f9fa;
+            --light-gray: #ffffff;
             --dark-gray: #343a40;
             --text-color: #333;
-            --border-radius: 8px;
+            --border-radius: 10px;
             --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
         }
 
         body {
-            background-color: #f7efe2;
+            background-color: var(--secondary-color);
             color: var(--text-color);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -31,7 +32,34 @@
             color: brown;
         }
 
-         /* Header */
+        /* Header */
+        .global-stats {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .star-rating {
+            font-size: 24px;
+            color: #ffc107;
+            display: inline-block;
+        }
+
+        .star-rating .fas.fa-star,
+        .star-rating .fas.fa-star-half-alt {
+            color: #ffc107;
+        }
+
+        .star-rating .far.fa-star {
+            color: #ddd;
+        }
+
+        .review-count {
+            font-size: 16px;
+            color: #666;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
         .navbar {
             background-color: var(--secondary-color) !important;
             padding: 15px 0;
@@ -45,14 +73,14 @@
 
         .navbar-nav .nav-link {
             color: var(--primary-color) !important;
-            font-weight: 400;
+            font-weight: 500;
             font-size: 18px;
             padding: 10px 15px;
             transition: var(--transition);
         }
 
         .navbar-nav .nav-link:hover {
-            color: var(--dark-brown) !important;
+            color: #6d361a !important;
             transform: translateY(-2px);
         }
 
@@ -79,7 +107,7 @@
         }
 
         .account-container {
-            background: white;
+            background-color: var(--light-gray);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             overflow: hidden;
@@ -88,7 +116,7 @@
 
         .account-header {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--light-gray);
             padding: 25px;
             text-align: center;
         }
@@ -100,8 +128,8 @@
         }
 
         .account-sidebar {
-            background: white;
-            border-radius: var(--border-radius);
+            background-color: var(--light-gray);
+            border-radius: 15px;
             box-shadow: var(--box-shadow);
             padding: 25px;
             height: 100%;
@@ -110,21 +138,30 @@
         .user-avatar {
             width: 120px;
             height: 120px;
-            object-fit: cover;
-            border: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0 auto 20px;
+            border: 4px solid var(--secondary-color);
+        }
+
+        .user-avatar i {
+            font-size: 48px;
+            color: var(--light-gray);
         }
 
         .nav-pills .nav-link {
             color: var(--dark-gray);
-            border-radius: 5px;
+            border-radius: 10px;
             margin-bottom: 8px;
             transition: var(--transition);
         }
 
         .nav-pills .nav-link.active {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--light-gray);
         }
 
         .nav-pills .nav-link:hover:not(.active) {
@@ -141,15 +178,17 @@
         }
 
         .form-control {
-            border-radius: var(--border-radius);
+            border-radius: 15px;
             padding: 12px 15px;
             border: 1px solid #ddd;
             transition: var(--transition);
+            background-color: var(--light-gray);
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(134, 68, 33, 0.25);
+            background-color: var(--light-gray);
         }
 
         .btn-primary {
@@ -173,6 +212,7 @@
             margin-bottom: 15px;
             transition: var(--transition);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background-color: var(--light-gray);
         }
 
         .booking-card:hover {
@@ -185,16 +225,19 @@
             padding: 5px 10px;
             border-radius: 20px;
         }
+
         .card-header {
             background-color: var(--primary-color);
+            color: var(--light-gray);
         }
+
         .status-active {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #e8f5e8;
+            color: #2d5016;
         }
 
         .status-completed {
-            background-color: #f8f9fa;
+            background-color: var(--light-gray);
             color: #6c757d;
         }
 
@@ -202,6 +245,7 @@
             text-align: center;
             padding: 40px;
             color: #6c757d;
+            background-color: var(--light-gray);
         }
 
         .no-bookings i {
@@ -211,12 +255,55 @@
         }
 
         .booking {
-            color: white;
+            color: var(--light-gray);
+        }
+
+        .service-badge {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin: 2px;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        .selected-package {
+            border: 2px solid #28a745 !important;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+        }
+        .package-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .package-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Стили для коричневой outline кнопки */
+        .btn-outline-brown {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: transparent;
+            transition: var(--transition);
+            border-radius: 10px;
+        }
+
+        .btn-outline-brown:hover {
+            background-color: var(--primary-color);
+            color: var(--light-gray);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(134, 68, 33, 0.3);
+        }
+
+        .btn-outline-brown:focus {
+            box-shadow: 0 0 0 0.2rem rgba(134, 68, 33, 0.25);
         }
 
         /* Footer */
         .footer {
-            background-color: #fff;
+            background-color: var(--light-gray);
             color: #000;
             padding: 60px 0 30px;
         }
@@ -230,6 +317,7 @@
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
 
         .footer-links a {
@@ -240,28 +328,29 @@
         }
 
         .footer-links a:hover {
-            color: #864421;
+            color: var(--primary-color);
             text-decoration: none;
             transform: translateX(5px);
         }
 
         .social-icons a {
-            color: var(--light-text);
+            color: var(--primary-color);
             font-size: 20px;
             margin-right: 15px;
             transition: var(--transition);
         }
 
         .social-icons a:hover {
-            color: var(--secondary-color);
+            color: #6d361a;
             transform: translateY(-3px);
         }
 
         .copyright {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
             padding-top: 20px;
             margin-top: 30px;
             text-align: center;
+            color: #666;
         }
 
         .map-container {
@@ -278,6 +367,192 @@
             min-height: 250px;
         }
 
+        /* Кнопки и баджи */
+        .btn-details {
+            background-color: var(--primary-color);
+            color: var(--light-gray);
+            border: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .btn-details:hover {
+            background-color: #6d361a;
+            color: var(--light-gray);
+            transform: translateY(-2px);
+        }
+
+        .booking-status-badge {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 30px;
+            background-color: var(--primary-color);
+            color: var(--light-gray);
+        }
+
+        .service-badge {
+            background: rgba(134, 68, 33, 0.1);
+            color: var(--primary-color);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin: 2px;
+            border: 1px solid rgba(134, 68, 33, 0.2);
+        }
+
+        /* Модальные окна */
+        .modal-header {
+            background-color: var(--primary-color);
+            color: var(--light-gray);
+            border-bottom: none;
+        }
+
+        .modal-content {
+            background-color: var(--light-gray);
+            border: none;
+            border-radius: var(--border-radius);
+        }
+
+        .alert-info {
+            background-color: rgba(134, 68, 33, 0.1);
+            border-color: rgba(134, 68, 33, 0.2);
+            color: var(--primary-color);
+        }
+
+        .alert-warning {
+            background-color: rgba(253, 216, 53, 0.1);
+            border-color: rgba(253, 216, 53, 0.2);
+            color: #856404;
+        }
+
+        /* Вкладки */
+        .tab-content { 
+            display: none; 
+        }
+        
+        .tab-content.active { 
+            display: block; 
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 25px;
+            margin: 5px 0;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-pills .nav-link:hover:not(.active) {
+            background: #e9ecef;
+        }
+        
+        .booking-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.2s ease;
+            background-color: var(--light-gray);
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Формы */
+        .custom-file-label {
+            background-color: var(--light-gray);
+            border: 1px solid #ddd;
+        }
+
+        .custom-file-input:focus ~ .custom-file-label {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(134, 68, 33, 0.25);
+        }
+
+        /* Иконки в тексте */
+        .fa-calendar-alt,
+        .fa-users,
+        .fa-ruble-sign,
+        .fa-phone,
+        .fa-file-pdf {
+            color: var(--primary-color);
+        }
+
+        .nav-pills .nav-link.active i {
+        color: var(--light-gray) !important;
+        }
+
+        .nav-pills .nav-link:not(.active) i {
+            color: var(--primary-color) !important;
+        }
+
+        .nav-pills .nav-link:hover:not(.active) i {
+            color: #6d361a !important;
+        }
+
+        /* Стили для модального окна смены пароля */
+        .password-form {
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .password-input-group {
+            position: relative;
+        }
+
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+
+        .modal {
+            z-index: 1050 !important;
+        }
+
+        .password-input-group {
+            position: relative;
+        }
+
+        .password-input-group .form-control {
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #864421;
+            cursor: pointer;
+            z-index: 10;
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .password-toggle:hover {
+            background-color: rgba(134, 68, 33, 0.1);
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(134, 68, 33, 0.2);
+        }
+
+        
         @media (max-width: 768px) {
             .map-container iframe {
                 height: 200px;
@@ -335,35 +610,50 @@
             }
         }
     </style>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 </head>
 <body>
     <!-- Header -->
-     <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="global-stats">
+                <div class="star-rating" title="Средний рейтинг: {{ global_avg_rating|floatformat:1 }} из 5">
+                    {% for i in "12345" %}
+                        {% if global_avg_rating >= forloop.counter %}
+                            <i class="fas fa-star active"></i>
+                        {% elif global_avg_rating|add:-0.5 >= forloop.counter|add:-1 %}
+                            <i class="fas fa-star-half-alt active"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="review-count">({{ global_total_reviews }})</span>
+                </div>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">Главная</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'cottages' %}">Коттеджи</a>
+                        <a class="nav-link" href="{% url 'cottages' %}">Бронирование</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'all_reviews' %}">Отзывы</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'post_list' %}">Блог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account' %}">Личный кабинет</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/posts/3/">О нас</a>
                     </li>
                 </ul>
             </div>
@@ -380,14 +670,16 @@
             <!-- Боковая панель -->
             <div class="col-md-4 mb-4">
                 <div class="account-sidebar text-center">
-                    <p></p>
-                    <h4 class="mb-2">{{ user.get_full_name|default:user.username }}</h4>
+                    <div class="user-avatar mb-3">
+                        <i class="fas fa-user fa-3x"></i>
+                    </div>
+                    <h4 class="mb-2">{{ user.get_full_name }}</h4>
                     <p class="text-muted mb-4">{{ user.email }}</p>
                     
-                    {% if user.client_profile.phone_number %}
+                    {% if user.phone %}
                         <p class="mb-4">
                             <i class="fas fa-phone mr-2 text-primary"></i> 
-                            {{ user.client_profile.phone_number }}
+                            {{ user.phone }}
                         </p>
                     {% endif %}
 
@@ -395,12 +687,12 @@
 
                     <ul class="nav nav-pills flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#profile" data-toggle="pill">
+                            <a class="nav-link active" href="#" data-tab="profile">
                                 <i class="fas fa-user-circle mr-2"></i> Профиль
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#bookings" data-toggle="pill">
+                            <a class="nav-link" href="#" data-tab="bookings">
                                 <i class="fas fa-calendar-alt mr-2"></i> Мои бронирования
                             </a>
                         </li>
@@ -410,199 +702,391 @@
             
             <!-- Основной контент -->
             <div class="col-md-8 mx-auto">
-                <div class="tab-content">
+                <!-- Вкладка профиля -->
+                <div id="profile" class="tab-content active">
                     <div class="card">
-                        <div class="card-header bg-primary-color text-white">
-                            <h4>Редактирование профиля</h4>
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-user-edit mr-2"></i>Редактирование профиля</h4>
                         </div>
                         <div class="card-body">
-                                
-                                {% if messages %}
-                                    {% for message in messages %}
-                                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                                            {{ message }}
-                                            <button type="button" class="close" data-dismiss="alert">
-                                                <span>&times;</span>
-                                            </button>
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-
-                                {{ form.media }}
-                                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                                    {% csrf_token %}
-                                    {% comment %} {{ form.as_p }} {% endcomment %}
-                                    <!-- Вывод общих ошибок -->
-                                    {% if form.errors %}
-                                    <div class="alert alert-danger">
-                                        <ul class="mb-0">
-                                            {% for field, errors in form.errors.items %}
-                                                {% for error in errors %}
-                                                    <li>{{ error }}</li>
-                                                {% endfor %}
-                                            {% endfor %}
-                                        </ul>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                        {{ message }}
+                                        <button type="button" class="close" data-dismiss="alert">
+                                            <span>&times;</span>
+                                        </button>
                                     </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                
+                                <!-- Вывод общих ошибок -->
+                                {% if form.errors or client_form.errors %}
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        {% for field, errors in form.errors.items %}
+                                            {% for error in errors %}
+                                                <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for field, errors in client_form.errors.items %}
+                                            {% for error in errors %}
+                                                <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Персональные данные -->
+                                <div class="form-row mb-4">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="id_last_name">Фамилия*</label>
+                                        {{ form.last_name }}
+                                        <div class="invalid-feedback">
+                                            {{ form.last_name.errors }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="id_first_name">Имя*</label>
+                                        {{ form.first_name }}
+                                        <div class="invalid-feedback">
+                                            {{ form.first_name.errors }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="id_patronymic">Отчество</label>
+                                        {{ form.patronymic }}
+                                    </div>
+                                </div>
+
+                                <div class="form-row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_email">Email*</label>
+                                        <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                                        <small class="form-text text-muted">Изменить email нельзя</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_phone">Телефон*</label>
+                                        {{ form.phone }}
+                                        <div class="invalid-feedback">
+                                            {{ form.phone.errors }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Документ из client_form -->
+                                <div class="form-group mb-4">
+                                    <label for="id_document">Документ, удостоверяющий личность</label>
+                                    {% if client.document %}
+                                        <div class="mb-2 d-flex align-items-center">
+                                            <a href="{{ client.document.url }}" target="_blank" class="mr-3">
+                                                <i class="fas fa-file-pdf text-danger"></i> Текущий документ
+                                            </a>
+                                            <div class="form-check">
+                                                <input type="checkbox" name="document-clear" id="document-clear" class="form-check-input">
+                                                <label for="document-clear" class="form-check-label text-danger">Удалить</label>
+                                            </div>
+                                        </div>
                                     {% endif %}
                                     
-                                    <!-- Персональные данные -->
-                                    <div class="form-row mb-4">
-                                        <div class="col-md-4 mb-3">
-                                            <label for="id_last_name">Фамилия*</label>
-                                            {{ form.last_name }}
-                                            <div class="invalid-feedback">
-                                                {{ form.last_name.errors }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="id_first_name">Имя*</label>
-                                            {{ form.first_name }}
-                                            <div class="invalid-feedback">
-                                                {{ form.first_name.errors }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="id_patronymic">Отчество*</label>
-                                            {{ form.patronymic }}
-                                        </div>
+                                    <div class="custom-file">
+                                        <input type="file" name="document" id="id_document" class="custom-file-input" 
+                                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                        <label class="custom-file-label" for="id_document">
+                                            {% if client.document %}Изменить документ{% else %}Выберите файл...{% endif %}
+                                        </label>
                                     </div>
-
-                                    <div class="form-row mb-4">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="id_email">Email*</label>
-                                            {{ form.email }}
-                                            <small class="form-text text-muted">Изменить email нельзя</small>
+                                    <small class="form-text text-muted">PDF, JPG, PNG, DOC, DOCX (макс. 5MB)</small>
+                                    
+                                    <!-- Вывод ошибок для поля документа -->
+                                    {% if client_form.document.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in client_form.document.errors %}
+                                                {{ error }}
+                                            {% endfor %}
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="id_phone_number">Телефон*</label>
-                                            {{ form.phone_number }}
-                                            <div class="invalid-feedback">
-                                                {{ form.phone_number.errors }}
-                                            </div>
-                                        </div>
-                                        {% comment %}</div> {% endcomment %}
-                                        <!-- Документ -->
-                                        <div class="form-group mb-4">
-                                            <label for="id_document">Документ</label>
-                                            {% if client.document %}
-                                                <div class="mb-2 d-flex align-items-center">
-                                                    <a href="{{ client.document.url }}" target="_blank" class="mr-3">
-                                                        <i class="fas fa-file-pdf"></i> Текущий документ
-                                                    </a>
-                                                    <div class="form-check">
-                                                        <input type="checkbox" name="document-clear" id="document-clear" class="form-check-input">
-                                                        <label for="document-clear" class="form-check-label text-danger">Удалить</label>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-                                            <div class="custom-file">
-                                                <input type="file" name="document" id="id_document" class="custom-file-input">
-                                                <label class="custom-file-label" for="id_document">Выберите файл...</label>
-                                            </div>
-                                            <small class="form-text text-muted">PDF, JPG или PNG (макс. 5MB)</small>
-                                            {{ form.document.errors }}
-                                        </div>
-
-                                        <button type="submit" class="btn btn-primary btn-lg btn-block">
-                                            <i class="fas fa-save"></i> Сохранить изменения
-                                        </button>
-                                    </form>
+                                    {% endif %}
                                 </div>
-                                <div class="text-center mt-4">
+
+                                <!-- Кнопка смены пароля -->
+                                <hr class="my-4">
+                                <button type="button" class="btn btn-outline-brown btn-block" 
+                                        onclick="$('#changePasswordModal').modal('show')">
+                                    <i class="fas fa-key mr-2"></i> Сменить пароль
+                                </button>
+
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                    <i class="fas fa-save mr-2"></i> Сохранить изменения
+                                </button>
+                            </form>
+                            
+                            <div class="text-center mt-4">
                                 <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">
+                                    <button type="submit" class="btn btn-outline-danger">
                                         <i class="fas fa-sign-out-alt mr-2"></i> Выйти
                                     </button>
                                 </form>
                             </div>
-                        <hr></div>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Вкладка бронирований -->
-                        <div class="tab-pane fade show active" id="bookings">
-                            {% comment %} <div class="account-container p-4"> {% endcomment %}
-                                <div class="card">
-                                    <div class="card-header booking">
-                                        <h4><i class="fas fa-calendar-alt mr-2"></i> Мои бронирования</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        {% if bookings %}
-                                        <div class="list-group">
-                                            {% for booking in bookings %}
-                                            <div class="list-group-item mb-3">
-                                                <div class="d-flex justify-content-between">
-                                                    <h5>{{ booking.house.name }}</h5>
-                                                    <span class="badge {% if booking.check_out_date > now %}bg-success{% else %}bg-secondary{% endif %}">
-                                                        {% if booking.check_out_date > now %}Активно{% else %}Завершено{% endif %}
+                <!-- Вкладка бронирований -->
+                <div id="bookings" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="fas fa-calendar-alt mr-2"></i>Мои бронирования</h4>
+                        </div>
+                        <div class="card-body">
+                            {% if bookings %}
+                            <div class="row">
+                                {% for booking in bookings %}
+                                <div class="col-12 mb-4">
+                                    <div class="card booking-card">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-8">
+                                                    <h5 class="card-title">{{ booking.house.name }}</h5>
+                                                    <p class="card-text mb-1">
+                                                        <i class="far fa-calendar-alt mr-2 text-primary"></i>
+                                                        {{ booking.check_in_date|date:"d.m.Y" }} → {{ booking.check_out_date|date:"d.m.Y" }}
+                                                        ({{ booking.nights }} ночей)
+                                                    </p>
+                                                    <p class="card-text mb-1">
+                                                        <i class="fas fa-users mr-2 text-primary"></i>
+                                                        {{ booking.guests }} гостей
+                                                    </p>
+                                                    <p class="card-text mb-1">
+                                                        <i class="fas fa-ruble-sign mr-2 text-primary"></i>
+                                                        Итого: <strong>{{ booking.total_cost|default:0|floatformat:2 }}</strong> руб.
+                                                    </p>
+
+                                                    {% if booking.services.exists or booking.package_info %}
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">
+                                                            {% if booking.package_info %}
+                                                                <i class="fas fa-crown text-warning"></i> Пакет: <strong>{{ booking.package_info.travel_package.name }}</strong>
+                                                            {% else %}
+                                                                Доп. услуги:
+                                                            {% endif %}
+                                                        </small>
+                                                        {% if not booking.package_info %}
+                                                            {% for service in booking.services.all %}
+                                                            <span class="service-badge">{{ service.name }}</span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                                <div class="col-md-4 text-right">
+                                                    <span class="badge booking-status-badge 
+                                                        {% if booking.status == 'cancelled' %}bg-danger
+                                                        {% elif booking.check_out_date > now %}bg-success
+                                                        {% else %}bg-secondary{% endif %}">
+                                                        {% if booking.status == 'cancelled' %}Отменено
+                                                        {% elif booking.check_out_date > now %}Активно
+                                                        {% else %}Завершено{% endif %}
                                                     </span>
+                                                    <br>
+                                                    <button class="btn btn-details mt-2" data-toggle="modal" data-target="#bookingModal{{ booking.booking_id }}">
+                                                        <i class="fas fa-info-circle mr-1"></i> Подробнее
+                                                    </button>
+                                                    {% if booking.check_out_date > now and booking.status != 'cancelled' %}
+                                                    <br>
+                                                    <form method="POST" action="{% url 'cancel_booking' booking.booking_id %}" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger btn-sm mt-2" 
+                                                                onclick="return confirm('Вы уверены, что хотите отменить бронирование?')">
+                                                            <i class="fas fa-times mr-1"></i> Отменить
+                                                        </button>
+                                                    </form>
+                                                    {% endif %}
                                                 </div>
-                                                <p class="mb-1">
-                                                    <i class="far fa-calendar-alt mr-2"></i>
-                                                    {{ booking.check_in_date|date:"d.m.Y" }} → {{ booking.check_out_date|date:"d.m.Y" }}
-                                                    ({{ booking.nights }} ночей)
-                                                </p>
-                                                <p class="mb-1">
-                                                    <i class="fas fa-users mr-2"></i>
-                                                    {{ booking.guests }} гостей
-                                                </p>
-                                                <p class="mb-1">
-                                                    <i class="fas fa-ruble-sign mr-2"></i>
-                                                    Итого: {{ booking.total_cost }} руб.
-                                                </p>
-                                                {% if booking.services.exists %}
-                                                <div class="mt-2">
-                                                    <small class="text-muted">Доп. услуги:</small>
-                                                    <ul class="list-unstyled">
-                                                        {% for service in booking.services.all %}
-                                                        <li>{{ service.name }} ({{ service.price }} руб.)</li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </div>
-                                                {% endif %}
                                             </div>
-                                            {% endfor %}
                                         </div>
-                                    {% else %}
-                                        <div class="text-center py-4">
-                                            <i class="far fa-calendar-times fa-3x text-muted mb-3"></i>
-                                            <h5>У вас нет бронирований</h5>
-                                            <a href="{% url 'cottages' %}" class="btn btn-primary mt-2">
-                                                <i class="fas fa-search mr-2"></i> Найти коттедж
-                                            </a>
-                                        </div>
-                                    {% endif %}
                                     </div>
                                 </div>
+
+                                <!-- Модальное окно бронирования -->
+                                <div class="modal fade" id="bookingModal{{ booking.booking_id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Детали бронирования #{{ booking.booking_id }}</h5>
+                                                <button type="button" class="close text-white" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6>Информация о бронировании</h6>
+                                                        <p><strong>Коттедж:</strong> {{ booking.house.name }}</p>
+                                                        <p><strong>Даты:</strong> {{ booking.check_in_date|date:"d.m.Y" }} - {{ booking.check_out_date|date:"d.m.Y" }}</p>
+                                                        <p><strong>Ночей:</strong> {{ booking.nights }}</p>
+                                                        <p><strong>Гостей:</strong> {{ booking.guests }}</p>
+                                                        <p><strong>Статус:</strong> 
+                                                            <span class="badge 
+                                                                {% if booking.status == 'cancelled' %}bg-danger
+                                                                {% elif booking.check_out_date > now %}bg-success
+                                                                {% else %}bg-secondary{% endif %}">
+                                                                {% if booking.status == 'cancelled' %}Отменено
+                                                                {% elif booking.check_out_date > now %}Активно
+                                                                {% else %}Завершено{% endif %}
+                                                            </span>
+                                                        </p>
+                                                        <p><strong>Номер бронирования:</strong> #{{ booking.booking_id }}</p>
+                                                    </div>
+                                                    <!-- Финансовая информация -->
+                                                    <div class="col-md-6">
+                                                        <h6>Финансовая информация</h6>
+                                                        
+                                                        {% if booking.package_info %}
+                                                            <!-- Отображение для пакетного бронирования -->
+                                                            <p><strong><i class="fas fa-crown text-warning mr-1"></i>Пакет "{{ booking.package_info.travel_package.name }}":</strong></p>
+                                                            <p class="mb-2"><strong>Стоимость пакета:</strong> {{ booking.package_info.total_package_price|default:0|floatformat:2 }} руб.</p>
+                                                            
+                                                            <p><strong>Включенные услуги:</strong></p>
+                                                            <ul class="list-unstyled">
+                                                                {% for service in booking.package_info.travel_package.options.all %}
+                                                                <li>• {{ service.name }} - {{ service.price|default:0|floatformat:2 }} руб.</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            
+                                                            {% if booking.package_info.selected_options.exists %}
+                                                            <p><strong>Дополнительные опции:</strong></p>
+                                                            <ul class="list-unstyled">
+                                                                {% for option in booking.package_info.selected_options.all %}
+                                                                <li>• {{ option.name }} - {{ option.price|default:0|floatformat:2 }} руб.</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            {% endif %}
+                                                            
+                                                        {% else %}
+                                                            <!-- Отображение для обычного бронирования -->
+                                                            <p><strong>Стоимость проживания:</strong> 
+                                                                {{ booking.house.price_per_night|default:0 }} руб. × {{ booking.nights }} ночей = 
+                                                                <strong>{{ booking.base_cost|default:0|floatformat:2 }} руб.</strong>
+                                                            </p>
+                                                            
+                                                            <!-- Дополнительные услуги -->
+                                                            {% if booking.services.exists %}
+                                                            <p><strong>Доп. услуги:</strong></p>
+                                                            <ul class="list-unstyled">
+                                                                {% for service in booking.services.all %}
+                                                                <li>• {{ service.name }} - {{ service.price|default:0|floatformat:2 }} руб.</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            {% else %}
+                                                            <p><strong>Доп. услуги:</strong> не выбраны</p>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        
+                                                        <!-- Общая стоимость -->
+                                                        <div class="total-cost-section" style="border-top: 2px solid #007bff; padding-top: 10px;">
+                                                            <p class="mb-0"><strong>Итого к оплате:</strong> 
+                                                                <span style="font-size: 1.2em; color: #007bff;">
+                                                                    {{ booking.total_cost|default:0|floatformat:2 }} руб.
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                
+                                                <hr>
+                                                
+                                                <div class="payment-info">
+                                                    <h6>Информация об оплате</h6>
+                                                    <div class="alert alert-info">
+                                                        <h6><i class="fas fa-credit-card mr-2"></i>Способы оплаты:</h6>
+                                                        <ul class="mb-2">
+                                                            <li>Банковской картой онлайн через ЮKassa</li>
+                                                            <li>Полная оплата при бронировании</li>
+                                                            <li>Предоплата 30% с последующей доплатой на месте</li>
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <div class="alert alert-warning">
+                                                        <h6><i class="fas fa-exclamation-triangle mr-2"></i>Условия отмены:</h6>
+                                                        <ul class="mb-0">
+                                                            <li>Возврат средств возможен при отмене за 36+ часов до заезда</li>
+                                                            <li>При отмене менее чем за 36 часов удерживается штраф</li>
+                                                            <li>Для отмены нажмите кнопку "Отменить" в карточке бронирования</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                                {% if booking.check_out_date > now and booking.status != 'cancelled' %}
+                                                <form method="POST" action="{% url 'cancel_booking' booking.booking_id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger" 
+                                                            onclick="return confirm('Вы уверены, что хотите отменить бронирование?')">
+                                                        <i class="fas fa-times mr-1"></i> Отменить бронирование
+                                                    </button>
+                                                </form>
+                                                {% endif %}
+                                                {% if booking.check_out_date > now %}
+                                                <button type="button" class="btn btn-primary" onclick="window.print()">
+                                                    <i class="fas fa-print mr-1"></i> Распечатать
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
                             </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="far fa-calendar-times fa-4x text-muted mb-3"></i>
+                                    <h5>У вас нет бронирований</h5>
+                                    <p class="text-muted mb-4">Найдите подходящий коттедж и забронируйте отдых!</p>
+                                    <a href="{% url 'cottages' %}" class="btn btn-primary">
+                                        <i class="fas fa-search mr-2"></i> Найти коттедж
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div> 
-
-     <!-- Footer -->
+    </div>
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-5 mb-lg-0">
-                    <img src="{% static 'images/logotip.png' %}" alt="FurTree Logo" class="footer-logo">
+                    <a href="{% url 'home' %}">
+                        <img src="{% static 'images/logotip.png' %}" alt="Ёлки - база отдыха" class="footer-logo">
+                    </a>
                     <p>Уютное пространство для отдыха на природе в п. Октябрьский, Пермский край.</p>
                     <div class="social-icons mt-4">
-                        <a href="#"><i class="fab fa-vk"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://vk.com/furtree364" target="_blank" title="ВКонтакте">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="https://wa.me/79026344757" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-5 mb-md-0">
                     <h3 class="footer-title">Меню</h3>
                     <div class="footer-links">
-                        <a href="#">Главная</a>
-                        <a href="{% url 'cottages' %}">Коттеджи</a>
+                        <a href="{% url 'home' %}">Главная</a>
+                        <a href="{% url 'cottages' %}">Бронирование</a>
                         <a href="{% url 'all_reviews' %}">Отзывы</a>
-                        <a href="#">О нас</a>
+                        <a href="{% url 'post_list' %}">Блог</a>
+                        <a href="/posts/3/">О нас</a>
+                        <a href="{% url 'account' %}">Личный кабинет</a>
                     </div>
                 </div>
                 
@@ -610,8 +1094,12 @@
                     <h3 class="footer-title">Контакты</h3>
                     <div class="footer-links">
                         <p><i class="fas fa-map-marker-alt mr-2"></i> Пермский край, п. Октябрьский, ул. Лазурная, 38</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (бронирование)</p>
-                        <p><i class="fas fa-phone-alt mr-2"></i> +7 (977) 777-77-77 (ресепшен)</p>
+                        <p class="d-flex align-items-center">
+                            <i class="fas fa-phone-alt mr-2" style="min-width: 20px;"></i> 
+                            <a href="tel:+79026344757" class="text-reset text-decoration-none">
+                                +7 (902) 634-47-57<br>(бронирование)
+                            </a>
+                        </p>
                     </div>
                 </div>
                 
@@ -619,14 +1107,14 @@
                     <h3 class="footer-title">Мы на карте</h3>
                     <div class="map-container">
                         <iframe 
-                            src="https://yandex.ru/map-widget/v1/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                            src="https://yandex.ru/map-widget/v1/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                             width="100%" 
                             height="250"
                             frameborder="0" 
                             allowfullscreen="true"
-                            style="border: 1px solid #ddd; border-radius: 4px;">
+                            style="border: 1px solid #ddd; border-radius: 8px;">
                         </iframe>
-                        <a href="https://yandex.ru/maps/?ll=63.190568%2C56.901132&z=15&pt=63.190568,56.901132,pm2grl" 
+                        <a href="https://yandex.ru/maps/?ll=57.180912,56.524809&z=15&pt=57.180912,56.524809,pm2grl" 
                         target="_blank" 
                         class="btn btn-sm btn-outline-secondary mt-2 d-block">
                             Открыть в Яндекс.Картах
@@ -636,144 +1124,305 @@
             </div>
             
             <div class="copyright">
-                <p class="mb-0">© 2025 База отдыха FurTree. Все права защищены.</p>
+                <p class="mb-0">© 2026 База отдыха Ёлки. Все права защищены.</p>
                 <p class="mb-0">Политика конфиденциальности | Договор оферты</p>
             </div>
         </div>
     </footer>
 
+    <!-- Модальное окно смены пароля -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-key mr-2"></i>Смена пароля</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordChangeForm" class="password-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="old_password">Текущий пароль</label>
+                            <div class="password-input-group">
+                                <!-- ИЗМЕНИТЕ name="current_password" НА name="old_password" -->
+                                <input type="password" class="form-control" id="old_password" name="old_password" required>
+                                <button type="button" class="password-toggle" data-target="old_password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new_password1">Новый пароль</label>
+                            <div class="password-input-group">
+                                <input type="password" class="form-control" id="new_password1" name="new_password1" required>
+                                <button type="button" class="password-toggle" data-target="new_password1">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">
+                                Пароль должен содержать как минимум 8 символов, включать буквы и цифры.
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new_password2">Подтвердите новый пароль</label>
+                            <div class="password-input-group">
+                                <input type="password" class="form-control" id="new_password2" name="new_password2" required>
+                                <button type="button" class="password-toggle" data-target="new_password2">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="passwordErrors" class="alert alert-danger" style="display: none;"></div>
+                        <div id="passwordSuccess" class="alert alert-success" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="submitPasswordChange">
+                        <i class="fas fa-save mr-1"></i> Сохранить пароль
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Подсветка активной вкладки в сайдбаре
-            $('.nav-pills .nav-link').click(function() {
+            // Закрытие navbar при клике на ссылку на мобильных устройствах
+            $('.navbar-nav>li>a').on('click', function(){
+                $('.navbar-collapse').collapse('hide');
+            });
+
+            // Переключение вкладок
+            $('.nav-pills .nav-link').click(function(e) {
+                e.preventDefault();
                 $('.nav-pills .nav-link').removeClass('active');
                 $(this).addClass('active');
+                
+                var targetTab = $(this).data('tab');
+                $('.tab-content').removeClass('active');
+                $('#' + targetTab).addClass('active');
             });
-            
+
             // Маска для телефона
-            $('input[name="phone_number"]').on('input', function() {
-                var phone = $(this).val().replace(/\D/g, '');
-                if (phone.length > 1) {
-                    phone = '+7' + phone.substring(1);
-                }
-                $(this).val(phone);
-            });
-        });
-        // Фиксированная шапка при прокрутке
-        $(window).scroll(function() {
-            if ($(this).scrollTop() > 100) {
-                $('.navbar').addClass('fixed-top shadow-sm');
-                $('body').css('padding-top', $('.navbar').outerHeight() + 'px');
-            } else {
-                $('.navbar').removeClass('fixed-top shadow-sm');
-                $('body').css('padding-top', '0');
-            }
-        });
-        // Автоматическое форматирование телефона
-        document.getElementById('client_phone').addEventListener('input', function(e) {
-            let phone = e.target.value.replace(/\D/g, '');
-            if (phone.length > 1) {
-                phone = '+7' + phone.substring(1);
-            }
-            e.target.value = phone;
-        });
-
-        $(document).ready(function() {
-            // Обработка отправки формы
-            $('form').on('submit', function(e) {
-                // Валидация телефона
-                const phone = $('input[name="phone"]').val();
-                if (phone && !phone.match(/^\+7\d{10}$/)) {
-                    alert('Пожалуйста, введите телефон в формате +7XXXXXXXXXX');
-                    e.preventDefault();
-                    return false;
-                }
-                return true;
-            });
-
-            // Автоматическое форматирование телефона
             $('#id_phone').on('input', function(e) {
-                let phone = $(this).val().replace(/\D/g, '');
-                if (phone.length > 1) {
-                    phone = phone.substring(1); // Убираем +7 если было введено
-                    phone = '+7 ' + phone.substring(0, 3) + ' ' + phone.substring(3, 6) + 
-                            ' ' + phone.substring(6, 8) + ' ' + phone.substring(8, 10);
-                    $(this).val(phone.trim());
+                let input = $(this);
+                let value = input.val().replace(/\D/g, '');
+                
+                if (value.length > 11) {
+                    value = value.substring(0, 11);
+                }
+                
+                if (value.startsWith('8')) {
+                    value = '7' + value.substring(1);
+                }
+                
+                if (value.startsWith('7') && value.length > 1) {
+                    input.val('+7' + value.substring(1));
+                } else if (value.length > 0) {
+                    input.val(value);
                 }
             });
 
-            // Перед отправкой убираем пробелы для валидации
-            $('#profile-form').on('submit', function() {
-                let phoneField = $('#id_phone');
-                phoneField.val(phoneField.val().replace(/\s/g, ''));
-                return true;
+            // Обработка выбора файла
+            $('.custom-file-input').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName || 'Выберите файл...');
             });
-        });
 
-            // Сохранение данных при изменении (чтобы не терялись при ошибках)
-            $('form').on('input', function() {
-                const formData = $(this).serializeArray();
-                formData.forEach(function(item) {
-                    sessionStorage.setItem(item.name, item.value);
+            // Если используете второй вариант с формой Django, добавьте этот код:
+            $('#id_document').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                var label = $(this).next('.custom-file-label');
+                if (fileName) {
+                    label.html(fileName);
+                } else {
+                    label.html('{% if client.document %}Изменить документ{% else %}Выберите файл...{% endif %}');
+                }
+            });
+
+            // Фиксированная шапка при прокрутке
+            $(window).scroll(function() {
+                if ($(this).scrollTop() > 100) {
+                    $('.navbar').addClass('fixed-top shadow-sm');
+                    $('body').css('padding-top', $('.navbar').outerHeight() + 'px');
+                } else {
+                    $('.navbar').removeClass('fixed-top shadow-sm');
+                    $('body').css('padding-top', '0');
+                }
+            });
+            // Переключение видимости пароля - ИСПРАВЛЕННАЯ ВЕРСИЯ
+            $(document).on('click', '.password-toggle', function() {
+                var target = $(this).data('target');
+                var input = $('#' + target);
+                var icon = $(this).find('i');
+                
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                    $(this).attr('title', 'Скрыть пароль');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                    $(this).attr('title', 'Показать пароль');
+                }
+            });
+
+            // Инициализация переключения пароля при загрузке
+            $(document).ready(function() {
+                // Добавляем подсказки для кнопок просмотра пароля
+                $('.password-toggle').each(function() {
+                    $(this).attr('title', 'Показать пароль');
                 });
             });
 
-            // Восстановление данных при загрузке страницы
-            $('form input').each(function() {
-                const savedValue = sessionStorage.getItem($(this).attr('name'));
-                if (savedValue) {
-                    $(this).val(savedValue);
+            // Валидация пароля
+            function validatePassword() {
+                var password1 = $('#new_password1').val();
+                var password2 = $('#new_password2').val();
+                var errors = [];
+
+                if (password1.length < 8) {
+                    errors.push('Пароль должен содержать минимум 8 символов');
                 }
-            });
-
-            $(document).ready(function() {
-            // Маска для телефона
-            $('.phone-input').mask('+7 (000) 000-00-00', {
-                placeholder: '_',
-                clearIfNotMatch: true
-            });
-
-            // Перед отправкой формы очищаем маску
-            $('#profile-form').on('submit', function() {
-                $('.phone-input').unmask();
-                return true;
-            });
-
-            // Активация вкладок при нажатии на сайдбар
-            $('.nav-pills a').click(function(e) {
-                e.preventDefault();
-                $(this).tab('show');
-            });
-
-            // Если в URL есть #bookings, открываем вкладку бронирований
-            if (window.location.hash === '#bookings') {
-                $('.nav-pills a[href="#bookings"]').tab('show');
-            }
-
-            // Инициализация вкладок
-            $('.nav-pills a').click(function(e) {
-                e.preventDefault();
-                $(this).tab('show');
                 
-                // Обновляем URL без перезагрузки страницы
-                history.pushState(null, null, $(this).attr('href'));
-            });
+                if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password1)) {
+                    errors.push('Пароль должен содержать буквы и цифры');
+                }
+                
+                if (password1 !== password2) {
+                    errors.push('Пароли не совпадают');
+                }
 
-            // Активируем вкладку из URL при загрузке
-            var activeTab = window.location.hash;
-            if (activeTab) {
-                $('.nav-pills a[href="' + activeTab + '"]').tab('show');
+                return errors;
             }
 
-            // Обработка кнопки назад/вперед браузера
-            $(window).on('popstate', function() {
-                var activeTab = window.location.hash;
-                if (activeTab) {
-                    $('.nav-pills a[href="' + activeTab + '"]').tab('show');
+            // Обработка смены пароля с детальной отладкой
+            $('#submitPasswordChange').click(function() {
+                var oldPassword = $('#old_password').val();
+                var newPassword1 = $('#new_password1').val();
+                var newPassword2 = $('#new_password2').val();
+                
+                $('#passwordErrors').hide().empty();
+                $('#passwordSuccess').hide().empty();
+
+                console.log('Отправка данных:', { oldPassword: !!oldPassword, newPassword1: !!newPassword1, newPassword2: !!newPassword2 });
+
+                // Базовая валидация
+                if (!oldPassword) {
+                    $('#passwordErrors').html('<ul><li>Введите текущий пароль</li></ul>').show();
+                    return;
                 }
+
+                if (!newPassword1 || !newPassword2) {
+                    $('#passwordErrors').html('<ul><li>Заполните все поля нового пароля</li></ul>').show();
+                    return;
+                }
+
+                // Валидация сложности пароля
+                var errors = validatePassword();
+                if (errors.length > 0) {
+                    $('#passwordErrors').html('<ul><li>' + errors.join('</li><li>') + '</li></ul>').show();
+                    return;
+                }
+
+                // Показываем индикатор загрузки
+                var submitBtn = $(this);
+                var originalText = submitBtn.html();
+                submitBtn.html('<i class="fas fa-spinner fa-spin mr-1"></i> Сохранение...');
+                submitBtn.prop('disabled', true);
+
+                // Отправка AJAX запроса
+                $.ajax({
+                    url: '{% url "change_password" %}',
+                    type: 'POST',
+                    data: {
+                        'old_password': oldPassword,
+                        'new_password1': newPassword1,
+                        'new_password2': newPassword2,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        console.log('Ответ сервера:', response);
+                        
+                        if (response.success) {
+                            $('#passwordSuccess').text(response.message).show();
+                            $('#passwordChangeForm')[0].reset();
+                            
+                            // Автоматическое закрытие через 3 секунды
+                            setTimeout(function() {
+                                $('#changePasswordModal').modal('hide');
+                            }, 3000);
+                        } else {
+                            var errorMessage = response.error || 'Произошла неизвестная ошибка';
+                            $('#passwordErrors').html('<ul><li>' + errorMessage + '</li></ul>').show();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ошибка AJAX:', status, error, xhr.responseText);
+                        var errorMessage = 'Ошибка сети или сервера';
+                        
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.error) {
+                                errorMessage = response.error;
+                            }
+                        } catch (e) {
+                            errorMessage = 'Ошибка соединения с сервером';
+                        }
+                        
+                        $('#passwordErrors').html('<ul><li>' + errorMessage + '</li></ul>').show();
+                    },
+                    complete: function() {
+                        // Восстанавливаем кнопку
+                        submitBtn.html(originalText);
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+
+            // Функция валидации пароля
+            function validatePassword() {
+                var password1 = $('#new_password1').val();
+                var password2 = $('#new_password2').val();
+                var errors = [];
+
+                if (password1.length < 8) {
+                    errors.push('Пароль должен содержать минимум 8 символов');
+                }
+                
+                if (!/(?=.*[a-zA-Zа-яА-Я])/.test(password1)) {
+                    errors.push('Пароль должен содержать хотя бы одну букву');
+                }
+                
+                if (!/(?=.*\d)/.test(password1)) {
+                    errors.push('Пароль должен содержать хотя бы одну цифру');
+                }
+                
+                if (password1 !== password2) {
+                    errors.push('Пароли не совпадают');
+                }
+
+                return errors;
+            }
+            // Добавьте в начало $(document).ready(function() {
+            console.log('Document ready');
+            console.log('jQuery version:', $.fn.jquery);
+            console.log('Bootstrap modal:', $.fn.modal ? 'available' : 'not available');
+
+            // Проверка модального окна
+            $('button[data-target="#changePasswordModal"]').click(function() {
+                console.log('Change password button clicked');
+                console.log('Modal element exists:', $('#changePasswordModal').length > 0);
             });
         });
     </script>
